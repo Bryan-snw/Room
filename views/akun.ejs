@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+
+    <!--Content-->
+    <div class="container-fluid" style="padding-top: 0;">
+      <form action="/akun" method="post">
+        <div>
+            <h1>Informasi Akun</h1>
+
+            <div class="card room">
+              
+                <div class="center">
+                  <!-- Info Room -->
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label ">Nama</label>
+                        <input type="text" class="form-control" name="nama" disabled="disabled" id="nama" value="<%= user[0].nama %> ">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="exampleFormControlInput1" class="form-label">Email</label>
+                      <input type="email" class="form-control" name="email" disabled="disabled" id="email" value="<%= user[0].username %> ">
+                    </div>
+                  
+                </div>
+
+            </div>
+            
+            <div class="center" style="text-align: center;">
+              <button class="btn mk-btn-submit" id="kirim" type="submit" disabled="disabled">Simpan Perubahan</button>
+            </div>
+
+        </div>
+      </form>
+    </div>
+
+    <script>
+
+      $(document).ready(function() {  
+        $('#custNameNext').prop('disabled', true);  
+    
+        function validateNextButton() { 
+            var buttonDisabled = $('#nama').val().trim() === '';
+            $('#kirim').prop('disabled', buttonDisabled); 
+          } 
+    
+          $('#nama').on('keyup ', validateNextButton);
+      }); 
+
+    </script>
+   
+<%- include('partials/footer') %>

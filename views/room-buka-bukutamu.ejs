@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+
+    <!--Nama Room-->
+    <div class="container-fluid" >
+        <h1><%= rooms[0].room.kegiatan %> </h1>
+        <h4>Id Room: <%= rooms[0]._id %> </h4>
+    </div>
+    
+
+        <!--Scan Barcode-->
+        <div class="container-fluid">
+            <div class="">
+                <h1 >Scan Barcode</h1>
+                <a href="">
+                    <div class="scan-qr center">
+                        <img class="img-sc-qr" src="/Images/scan-qr.png" alt="Barcode">
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!--Pertemuan-->
+        <div class="container-fluid">
+            <!--Header Content-->
+            <div class="header-content">
+                <div class="row">
+
+                    <div class="col-lg-6 d-flex justify-content-left">
+                        <h1>Pertemuan</h1>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <h5 class="show-all"><a href="tampilsemua">Urutkan</a></h5>
+                    </div>
+
+                </div>
+            </div>
+
+            <!--Content-->
+            <div class="content">
+
+                <a href="">
+                    <div class=" scan-qr center">
+                        <h4>Pertemuan 1</h4>
+                    </div>
+                </a>
+
+                <a href="">
+                    <div class=" scan-qr center">
+                        <h4>Pertemuan 2</h4>
+                    </div>
+                </a>
+
+                <a href="">
+                    <div class=" scan-qr center">
+                        <h4>Pertemuan 2</h4>
+                    </div>
+                </a>       
+
+                <br>
+                <div class="center" style="text-align: center;">
+                    <button class="btn mk-btn-submit" type="submit">Export</button>
+                </div>
+
+            </div>
+
+            
+
+        </div>
+
+    
+<%- include('partials/footer') %>

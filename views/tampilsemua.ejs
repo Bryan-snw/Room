@@ -1,0 +1,76 @@
+<%- include('partials/header-home') %>
+
+    <!--Event-->
+    <div class="container-fluid">
+        <!--Header Content-->
+        <div class="header-content">
+            <div class="row">
+
+                <div class="col-lg-6 d-flex justify-content-left">
+                    <h1> <%= kategori %>  </h1>
+                </div>
+
+            </div>
+        </div>
+
+       <!--Content-->
+       <div class="content">
+        <div class="row">
+
+
+            <% myroom.forEach(function(foundRoom){ %>
+                <div class="col-lg-3 col-md-6" >
+
+                    
+                    <div class="card room" role="button" data-toggle="modal" data-target="#<%=foundRoom._id%>">
+                        <div class="foto-card ">
+                            <img src="data:image/<%=foundRoom.img.contentType%>;base64,
+                            <%=foundRoom.img.data.toString('base64')%>" class=" img-card" alt="Picture">
+                        </div>
+                        
+                        <div class="card-body" >
+                                <h5 class="card-title" data-toggle="tooltip" data-placement="top" title="<%= foundRoom.room.kegiatan %>">
+                                    <%= foundRoom.room.kegiatan.substring(0, 15) %>
+                                </h5>
+                        </div>
+                    </div>
+                
+
+                </div>       
+
+                <!-- Modal -->
+                <div class="modal fade" id="<%=foundRoom._id%>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Apa yang anda ingin lakukan?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <a href="/room/edit/<%=foundRoom._id%>">
+                                    <button type="button" class="btn btn-outline-primary">Edit</button>
+                                </a>
+                                <a href="/room/buka/<%=foundRoom._id%>">
+                                    <button type="button" class="btn btn-outline-primary">Buka</button>
+                                </a>
+                                <a href="/room/hapus/<%=foundRoom._id%>">
+                                    <button type="button" class="btn btn-outline-primary">Hapus</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            <% }); %> 
+
+                          
+        </div>
+
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

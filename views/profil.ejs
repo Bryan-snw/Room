@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+      <!--Form Daftar-->
+    <div class="container-fluid" style="padding-top: 0;" >
+      <div class="center">
+        <h1>Akun</h1>
+      </div>
+      
+      <form action="" method="post">
+        <div class="center dv-card">
+          <div style="text-align: center;">
+            <div class="img-header-profile center">
+              <img src="/Images/logo.png" alt="Picture">
+            </div>
+            <h4><%= UserName %></h4>
+          </div>
+
+          
+          <hr>
+
+          <div class="card-body">
+            <a href="akun">
+              <div>
+                <h5>Informasi Akun</h5>
+              </div>
+            </a>
+            <hr>
+            <a href="">
+              <div>
+                <h5>Berlangganan</h5>
+              </div>
+            </a>
+
+
+          <div class="card-body">
+            <a class="btn btn-submit" href="/keluar" role="button">Keluar</a>            
+          </div>
+          
+        </div>
+      </form> 
+    </div>
+
+
+<%- include('partials/footer') %>

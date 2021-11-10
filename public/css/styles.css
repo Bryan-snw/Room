@@ -1,0 +1,378 @@
+html{
+    
+    height: 100%;
+    margin-bottom: 0%;
+}
+
+body{
+    font-family: 'Montserrat', sans-serif;
+
+}
+
+h1, h2, h3, h4, h5, h6{
+    font-family: 'Dosis';
+    font-weight:bold;
+  }
+
+
+
+img{
+    width: 100%;
+}
+
+a{
+    text-decoration: none;
+    color: inherit;
+}
+
+A:hover{
+    color: inherit;
+}
+
+/* Heading */
+.big-heading{
+    font-family: 'Dosis';
+    font-weight: 900;
+    font-size: 3.5rem;
+    line-height: 1.5;
+}
+
+.title-content{
+    text-align: center;
+}
+
+.section-heading{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    line-height: 1.5;
+    font-weight:normal;
+}
+
+.bg{
+    background-color: #ec9dc1;
+    background-image: linear-gradient(180deg, #9dd7d0 20%, #ec9dc1 80%);
+    background-repeat: no-repeat;
+}
+
+.container-fluid{
+    padding: 3% 15%;
+    
+  }
+
+.dv-card{
+    background-color: rgba(245, 245, 245, 0.8);
+    width: auto;
+    border-radius: 15px;
+    padding: 5px;
+    margin: 10px;
+}
+
+/* Navigation Bar */
+.navbar{
+    padding: 0 0 4.5rem;
+  }
+
+  .nav-item{
+    padding: 0 18px;;
+  }
+
+  .nav-link{
+    font-size: 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    text-align: left;
+  }
+
+  .navbar-brand{
+    font-family: 'Dosis';
+    font-size: 2.5rem;
+    font-weight:700;
+  }
+
+/* title image */
+
+.title-image{
+    width: 80%;
+    align-items: center;
+    position: relative;
+    display: flex;
+}
+
+.title-heading{
+    text-align: center;
+}
+
+/* Button */
+.login-button{
+    margin: 3% 3% 3% 0;
+  }
+
+.center {
+    margin: auto;
+    padding: 10px;
+    width: 50%;
+    
+  }
+
+
+/* DAFTAR & MASUK  */
+.form-control{
+    align-items: center;
+    margin: 5px;
+    padding: auto;
+}
+
+.form-check{
+    text-align: left;
+}
+
+.btn-submit{
+    border-radius: 15px;
+    width: 100%;
+    height: 120%;
+    align-items: center;
+    background-image: linear-gradient(90deg, #9dd7d0 25%, #ec9dc1 75%);
+    font-family: "Dosis";
+    font-weight: bold;
+    font-size:1.3rem ;
+}
+
+.btn-google{
+    width: 100%;
+    height: 125%;
+    text-align: center;
+    /* padding: 6px 12px; */
+    border-radius: 12px;
+}
+
+.fs-google .fab{
+    padding-right: 10px;
+    padding-left: 10px;
+    right: 0px;
+    width: auto;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+
+.bold{
+    font-weight: bolder;
+    color: #FF5A5F;
+}
+
+.small-text{
+    font-family: 'Montserrat', sans-serif;
+    color: #8D8D8D;
+    text-align: center;
+    margin: 0px;
+}
+
+@media (max-width:991px){
+    .center{
+        width: 100%;
+    }
+
+  }
+
+/* Home */
+.btn-search{
+    border-radius: 10px;
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+    
+}
+
+.scan-qr{
+    background-color:#F5F5F5;
+    width: 100%;
+    margin: 15px 0px;
+    padding: 10px;
+    text-align: center;
+    display: block;
+    border-radius: 20px;
+}
+
+.img-sc-qr{
+width: 15%;
+height: auto;
+}
+
+.show-all{
+    text-align: right;
+    margin: auto;
+    padding: 10px;
+    width: 100%;
+}
+
+.add-room-card{
+    text-align: center;
+    font-size: 6rem;
+    margin: 15px;
+    padding: 22px;
+}
+
+
+/* .header-content{
+    
+} */
+
+@media (max-width:991px){
+    .show-all{
+        text-align: left;
+    }
+
+    .add-room-card{
+        font-size: 8rem;
+        margin: 15px;
+        padding: 1px;
+    }
+
+  }
+
+  .room{
+      background-color: #F5F5F5;
+      border-radius: 10px;
+      margin: 15px 5px;
+      padding: 10px;
+  }
+
+  .img-card{
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+
+  .cs-title-card{
+      margin: 5px;
+  }
+
+  /* Buat ROom */
+  .form-card{
+      background-color: #F5F5F5;
+      margin: 15px 0px;
+      padding: 10px;
+      text-align: center;
+      display: block;
+      border-radius: 20px;
+  }
+
+
+  .form-card-info{
+    background-color: #F5F5F5;
+    margin: 15px 0px;
+    padding: 30px;
+    text-align: center;
+    display: block;
+    border-radius: 20px;
+}
+
+.foto-card{
+    height: 220px;
+    width: auto; /* Can be anything */
+    position: relative;
+}
+
+.img-header-card{
+    width: 20%
+}
+
+.img-header-profile{
+    width: 35%;
+    text-align: center;
+}
+
+.label-name{
+    text-align: left;
+}
+
+
+  .mk-btn-submit{
+    border-radius: 15px;
+    width: 95%;
+    height: 120%;
+    background-image: linear-gradient(90deg, #9dd7d0 25%, #ec9dc1 75%);
+    font-family: "Dosis";
+    font-weight: bold;
+    font-size:1.3rem ;
+}
+
+.barcode{
+    position: absolute;
+    width: 10%
+}
+
+
+.data-card{
+    background-color:#F5F5F5;
+    width: 100%;
+    margin: 15px 0px;
+    padding: 10px;
+    text-align: left;
+    display: block;
+    border-radius: 20px;
+}
+
+.img-button{
+    width: 70px;
+    margin: 5px 15px;
+}
+
+@media (max-width:991px){
+    .img-header-card{
+        width: 50%
+    }
+
+    .barcode{
+        position: absolute;
+        width: 15%
+    }
+    .img-button{
+        width: 10%;
+        margin: 5px 15px;
+    }
+
+
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 150%;
+    left: 50%;
+    margin-left: -60px;
+  }
+  
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }

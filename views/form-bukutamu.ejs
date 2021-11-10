@@ -1,0 +1,77 @@
+<%- include('partials/header') %>
+
+    <!--Content-->
+    <div class="container-fluid">
+        <div class="">
+            <h1>Buku Tamu</h1>
+            <div class="card room">
+              
+              <form action="/form-bukutamu" method="post" enctype="multipart/form-data">
+                
+                <div class="img-header-card center" style="text-align: center;">
+                  
+                  <img src="/Images/logo.png" class="card-img-top" alt="Picture">
+                    
+                </div>
+                <div class="center">
+                  
+                  <label for="exampleFormControlInput1" class="form-label">Upload Foto</label>
+                  <input type="file" class="form-control" id="image" name="image" value="" >
+                
+                </div>
+                <div class="center">
+                  <h2>Form</h2>
+                  <hr>
+                  <% ListForm.forEach(function(list) {  %>
+                    <div class="mb-3">
+                      <label for="exampleFormControlInput1" class="form-label"><%= list %> </label>
+                      <input type="text" class="form-control" id="exampleFormControlInput1" disabled="disabled" placeholder="">
+                    </div>
+                  <% }); %>
+                
+                </div>  
+              </div>
+                <div class="center" style="text-align: center;">
+                    <button class="btn mk-btn-submit" type="submit">Buat</button>
+                </div>
+                </form>
+
+                <p class="small-text">Atau</p>
+
+                <div class="card-body">
+                  <button class="btn btn-submit" type="button" data-toggle="modal" data-target="#tambahForm" >Tekan Untuk Tambah</button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="tambahForm" tabindex="-1" role="dialog" aria-labelledby="tambahForm" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLongTitle">Tambah isi Formulir</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                              </button>
+                          </div>
+                          <form id="submit_form" action="/tambahForm" method="post">
+                            <div class="modal-body">
+                              <label for="exampleFormControlInput1" class="form-label">Tambah</label>
+                              <input type="text" name="newForm" class="form-control" id="exampleFormControlInput1" placeholder="Alamat, dll">
+                            </div>
+                            <div class="modal-footer">
+                              <button onclick="form_submit()"class="btn btn-outline-primary">Tambah</button>
+                              <button type="button" data-dismiss="modal" class="btn btn-outline-primary">Tutup</button>
+                            </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+            
+        </div>
+    </div>
+    <script type="text/javascript">
+      function form_submit() {
+        document.getElementById("submit_form").submit();
+       }    
+    </script>
+
+<%- include('partials/footer') %>
