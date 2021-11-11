@@ -302,11 +302,17 @@ app.get("/home", function(req,res){
             if (err) {
                 console.log(err);
             } else {
-                MyRoom.find({pesertaid: req.user.id, jenis: "Buku Tamu"}, function (err, foundBukuTamu) {  
+                MyRoom.find({pesertaid: req.user.id, jenis: "Event"}, function (err, foundEvent) {  
                     if (err) {
                         console.log(err);
                     } else {
-                        res.render("home", {myroom: foundRoom, bukutamu: foundBukuTamu});
+                        MyRoom.find({pesertaid: req.user.id, jenis: "Buku Tamu"}, function (err, foundBukuTamu) {  
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                res.render("home", {myroom: foundRoom, event:foundEvent, bukutamu: foundBukuTamu});
+                            }
+                        }) 
                     }
                 })
             }
@@ -1049,6 +1055,7 @@ app.post("/tambahForm-edit-event", function (req,res) {
   
 });
 
+// PENCARIAN
 app.post("/cari", function (req,res) {  
     
     if (req.isAuthenticated()) {
@@ -1064,23 +1071,24 @@ app.post("/cari", function (req,res) {
     }else {
         res.redirect("/masuk");
     }
-
-    
-    
 });
-
 
 app.get("/daftar/room-info/:roomId", function(req,res){
     
     infoRoom = {
-        roomId: req.params.roomId,
+        roomId: req.params.roomId
     };
 
     MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
         if (err) {
             console.log(err);
         } else if (foundRoom) {
-            res.render("peserta-info-room-bukutamu", {rooms: foundRoom});
+
+            if (foundRoom[0].jenis === "Buku Tamu") {
+                res.render("peserta-info-room-bukutamu", {rooms: foundRoom});
+            } else if (foundRoom[0].jenis === "Event"){
+                res.render("peserta-info-room-event", {rooms: foundRoom});
+            }   
         } else {
             console.log("Not Found");
         }
@@ -1088,19 +1096,190 @@ app.get("/daftar/room-info/:roomId", function(req,res){
        
 });
 
-app.post("/daftar/room-info", function (req,res) {  
-    console.log(req.body.roomId);
-    MyRoom.find({_id: req.body.roomId}, function (err, foundRoom) {  
+app.post("/daftar/room-info/:roomId", function (req,res) {  
+    console.log(req.params.roomId);
+    
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
         if (err) {
             console.log(err);
         } else if (foundRoom) {
-            res.render("peserta-form-room-bukutamu", {rooms: foundRoom});
+            if (foundRoom[0].jenis === "Buku Tamu") {
+                res.render("peserta-form-room-bukutamu", {rooms: foundRoom});
+            } else if (foundRoom[0].jenis === "Event"){
+                res.render("peserta-ticket-room-event", {rooms: foundRoom});
+            }
+            
         } else {
             console.log("Not Found");
         }
     });
 });
 
+// EVENT
+app.post("/daftar/room-ticket/:roomId", function (req,res) {  
+
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            res.render("peserta-form-room-event", {rooms: foundRoom});
+        } else {
+            console.log("Not Found");
+        }
+    });
+
+});
+
+app.post("/peserta/form/room/event/:roomId", function (req, res) {  
+
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            foundRoom[0].pesertaid.forEach(function (foundId) {  
+                console.log(foundId);
+                pesertaId.push(foundId);
+            });
+        }
+    });
+
+    pesertaId.push(req.user.id);
+
+    let lists = req.body;
+    console.log(lists);
+    for (var key in lists) {
+        if (lists.hasOwnProperty(key)) {
+            console.log(key + " -> " + lists[key]);
+            formPeserta.push(lists[key]);
+        }
+    }
+
+    MyRoom.updateOne(
+        {_id: req.params.roomId},
+        {
+           pesertaid: pesertaId
+        },
+        function (err) {  
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Update Succes");
+        }
+    });
+
+    const newPeserta = new Peserta({
+        roomId: req.params.roomId,
+        userId: req.user.id,
+        peserta: formPeserta
+    });
+    
+    newPeserta.save(function (err) {  
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Peserta add Succesfully");
+        }
+    });
+
+    formPeserta=[];
+    pesertaid=[];
+
+    res.redirect("/home");
+
+});
+
+// EVENT - EDIT
+app.get("/room/edit/peserta/e/:roomId", function (req,res) {  
+
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            
+            Peserta.find({roomId: req.params.roomId, userId: req.user.id }, function (err, foundData) {  
+                if (err) {
+                    console.log(err);
+                } else if (foundData) {
+                    console.log(foundData[0].peserta);
+                    res.render("peserta-form-room-edit-event", {rooms: foundRoom, data: foundData});
+                }
+            })
+            
+        } else {
+            console.log("Not Found");
+        }
+    });
+});
+
+app.post("/peserta/edit/event/:roomId", function (req, res) {  
+    let lists = req.body;
+    console.log(lists);
+    for (var key in lists) {
+        if (lists.hasOwnProperty(key)) {
+            console.log(key + " -> " + lists[key]);
+            formPeserta.push(lists[key]);
+        }
+    }
+    console.log(formPeserta);
+
+    Peserta.updateOne(
+        {roomId: req.params.roomId, userId: req.user.id},
+        {
+            peserta: formPeserta
+        },
+        function (err) {  
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Update Succes");
+
+            infoRoom=[];
+            formPeserta=[];
+
+            res.redirect("/home");
+        }
+    });
+});
+
+// EVENT - BUKA
+app.get("/room/buka/peserta/e/:roomId", function (req,res) {  
+    
+    infoRoom = {
+        roomId: req.params.roomId
+    }
+
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            res.render("peserta-info-room-buka-event", {rooms: foundRoom});
+        } else {
+            console.log("Not Found");
+        }
+    });
+});
+
+app.post("/peserta-form-room-buka-event", function (req, res) {  
+    MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            Peserta.find({roomId: infoRoom.roomId, userId: req.user.id }, function (err, foundData) {  
+                if (err) {
+                    console.log(err);
+                } else if (foundData) {
+                    console.log(foundData[0].peserta);
+                    res.render("peserta-form-room-buka-event", {rooms: foundRoom, data: foundData});
+                }
+            })
+            
+        } else {
+            console.log("Not Found");
+        }
+    });
+});
+
+// BUKU TAMU
 app.post("/peserta-form-room-bukutamu", function (req, res) {  
     
 
@@ -1163,6 +1342,7 @@ app.post("/peserta-form-room-bukutamu", function (req, res) {
 
 });
 
+// BUKU TAMU - BUKA
 app.get("/room/buka/peserta/:roomId", function (req,res) {  
     
     MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
@@ -1198,6 +1378,7 @@ app.post("/peserta-form-room-buka-bukutamu", function (req, res) {
 
 });
 
+// BUKU TAMU - EDIT
 app.get("/room/edit/peserta/:roomId", function (req,res) {  
 
     infoRoom = {
@@ -1254,6 +1435,7 @@ app.post("/peserta-edit-bukutamu", function (req, res) {
         }
     });
 });
+
 
 app.get("/peserta2", function(req,res){
     res.render("peserta2");

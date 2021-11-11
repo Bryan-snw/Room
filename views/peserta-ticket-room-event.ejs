@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+
+    <!--Content-->
+    <div class="container-fluid">
+        <div class="">
+            <form action="/daftar/room-ticket/<%= rooms[0]._id %>" method="post">
+            <h1>Ticket</h1>
+            <div class="card room">
+                <div class="img-header-card center">
+                    <img src="data:image/<%=rooms[0].img.contentType%>;base64,
+                    <%=rooms[0].img.data.toString('base64')%>" class="card-img-top" alt="Picture">
+                    <h4 style="text-align: center;" >Mobile Programming</h4>
+                </div>
+                
+                    <div class="center">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Jumlah Tiket</label>
+                            <input type="number" min="1" max="1" class="form-control" name="jumlahTiket" id="jumlahTiket">
+                          </div>     
+                    </div>
+                  
+            </div>
+            <div class="center" style="text-align: center;">
+                <button class="btn mk-btn-submit" id="kirim" disabled type="submit">Selanjutnya</button>
+            </div>
+            </form>
+            
+        </div>
+    </div>
+
+    <script>
+
+        $(document).ready(function() {  
+          $('#custNameNext').prop('disabled', true);  
+      
+          function validateNextButton() { 
+              var buttonDisabled = $('#jumlahTiket').val().trim() === "";
+              $('#kirim').prop('disabled', buttonDisabled); 
+            } 
+            
+            $("#jumlahTiket").click(validateNextButton);
+            $("#jumlahTiket").keyup(validateNextButton);
+  
+        }); 
+  
+      </script>
+
+
+<%- include('partials/footer') %>

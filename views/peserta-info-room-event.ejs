@@ -3,9 +3,9 @@
     <!--Content-->
     <div class="container-fluid">
         <div class="">
-            <form action="/daftar/room-info" method="post">
+            <form action="/daftar/room-info/<%= rooms[0]._id %>" method="post">
             <h1>Room Info</h1>
-            <input hidden name="roomId" id="roomId" value="<%= rooms[0]._id %>">  
+            
             <div class="card room">
                 <div class="img-header-card center">
                     <img src="data:image/<%=rooms[0].img.contentType%>;base64,
@@ -40,7 +40,7 @@
 
                         <div class="mb-3">
                             <h4>Price</h4>
-                            <h3>IDR 50.000</h3>
+                            <h3>IDR <%= rooms[0].ticket.hargaTicket %> </h3>
                         </div>
             
                     </div>

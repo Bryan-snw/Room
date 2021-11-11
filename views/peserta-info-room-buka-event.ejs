@@ -3,8 +3,9 @@
     <!--Content-->
     <div class="container-fluid">
         <div class="">
-            <form action="/daftar/room-info/<%= rooms[0]._id %>" method="post">
+            <form action="/peserta-form-room-buka-event" method="post">
             <h1>Room Info</h1>
+            
             <div class="card room">
                 <div class="img-header-card center">
                     <img src="data:image/<%=rooms[0].img.contentType%>;base64,
@@ -35,6 +36,11 @@
                                 <a href=<%= rooms[0].room.info %>><h5> Media Sosial/Link Meet </h5></a>
                             </div>
                             <hr>
+                        </div>
+
+                        <div class="mb-3">
+                            <h4>Price</h4>
+                            <h3>IDR <%= rooms[0].ticket.hargaTicket %> </h3>
                         </div>
             
                     </div>

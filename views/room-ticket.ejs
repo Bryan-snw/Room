@@ -6,7 +6,8 @@
             <h1>Ticket</h1>
             <div class="card room">
                 <div class="img-header-card center">
-                    <img src="/Images/logo.png" class="card-img-top" alt="Picture">
+                    <img src="data:image/<%=rooms[0].img.contentType%>;base64,
+                    <%=rooms[0].img.data.toString('base64')%>" class="card-img-top" alt="Picture">
                 </div>
                 <form action="/room-ticket" method="post">
                     <div class="center">
