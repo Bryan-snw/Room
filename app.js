@@ -18,6 +18,7 @@ const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 const { application } = require('express');
+const qrcode = require("qrcode");
 
 // Variables
 let infoRoom = {};
@@ -49,6 +50,23 @@ mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB Connection Error"));
+
+// Barcode Room
+const barcodeRoomSchema = new Schema({
+    qrcode: String,
+    roomId: String
+})
+
+const BarcodeRoom = new mongoose.model("BarcodeRoom", barcodeRoomSchema);
+
+// Barcode Peserta
+// Barcode Room
+const barcodePesertaSchema = new Schema({
+    qrcode: String,
+    pesertaId: String
+})
+
+const BarcodePeserta = new mongoose.model("BarcodePeserta", barcodePesertaSchema);
 
 // ForMyGuest
 const pesertaSchema = new Schema({
@@ -697,9 +715,12 @@ app.get("/room/buka/:roomId", function (req,res) {
             if (err) {
                 console.log(err);
             } else {
-                console.log(foundRoom[0].room.kegiatan);
 
-                res.render("room-buka-bukutamu", {rooms: foundRoom});
+                if (foundRoom[0].jenis === "Buku Tamu") {
+                    res.render("room-buka-bukutamu", {rooms: foundRoom});
+                } else if (foundRoom[0].jenis === "Event") {
+                    res.render("room-buka-event", {rooms: foundRoom});
+                }
             }
         });
     }else {
@@ -1060,6 +1081,23 @@ app.post("/cari", function (req,res) {
     
     if (req.isAuthenticated()) {
         MyRoom.find({_id: req.body.cari}, function (err, foundRoom) {  
+            if (err) {
+                console.log(err);
+            } else if (foundRoom) {
+                res.render("cari", {myroom: foundRoom}); 
+            } else {
+                console.log("Not FOund");
+            }
+        });
+    }else {
+        res.redirect("/masuk");
+    }
+});
+
+app.get("/cari/:roomId", function (req,res) {  
+    
+    if (req.isAuthenticated()) {
+        MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
             } else if (foundRoom) {
@@ -1436,7 +1474,6 @@ app.post("/peserta-edit-bukutamu", function (req, res) {
     });
 });
 
-
 app.get("/peserta2", function(req,res){
     res.render("peserta2");
 });
@@ -1444,12 +1481,21 @@ app.get("/peserta3", function(req,res){
     res.render("peserta3");
 });
 
-
 app.get("/Room2", function(req,res){
     res.render("Room2");
 });
 app.get("/Room3", function(req,res){
     res.render("Room3");
+});
+
+app.get("/qrcode/:roomId", function (req, res) {  
+    let barcode = "/cari/"+req.params.roomId;
+
+    qrcode.toDataURL(barcode,(err, src)=>{
+        if (!err) {
+            res.render("lihat-barcode", {qrcode: src});
+        }
+    });
 });
 
 app.listen(3000, function() {  

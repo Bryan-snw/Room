@@ -4,6 +4,12 @@
     <div class="container-fluid" >
         <h1><%= rooms[0].room.kegiatan %> </h1>
         <h4>Id Room: <%= rooms[0]._id %> </h4>
+        <div class="qrcode">
+            <a href="/qrcode/<%= rooms[0]._id %>">
+                <img src="/Images/qrcode.png" alt="barcode">
+            </a>
+        </div>
+        
     </div>
     
 

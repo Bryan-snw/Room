@@ -2,15 +2,15 @@
 
     <!--Nama Room-->
     <div class="container-fluid" >
-        <h1>Mobile Programming </h1>
+        <h1><%= rooms[0].room.kegiatan %></h1>
 
         <div class="center data-card">
 
-            <h4>Tanggal: 19-10-2021</h4>
-            <h4>Hotel Aston, Makassar</h4>
+            <h4>Tanggal: <%= rooms[0].room.tanggal %> </h4>
+            <h4><%= rooms[0].room.lokasi %>, <%= rooms[0].room.kota %></h4>
             <h4>10 Tiket Terjual</h4>
-            <h4>40 Tiket Tersisa</h4>
-            <h4>ID Room: xxxxxx</h4>
+            <h4><%= rooms[0].ticket.kuotaTicket %> Tiket Tersisa</h4>
+            <h4>ID Room: <%= rooms[0]._id %></h4>
             
         </div>
 
@@ -22,7 +22,7 @@
             <a href="">
                 <img class="img-button" src="/Images/open-book.png" alt="">
             </a>
-            <a href="">
+            <a href="/qrcode/<%= rooms[0]._id %>">
                 <img class="img-button" src="/Images/qrcode.png" alt="">  
             </a>
             <a href="">
