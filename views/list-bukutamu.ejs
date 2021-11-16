@@ -2,7 +2,7 @@
 
     <!--Nama Room-->
     <div class="container-fluid" >
-        <h1>Mobile Programming </h1>
+        <h1><%= rooms[0].room.kegiatan %></h1>
         <h4>Tanggal: 19-10-2021</h4>
     </div>
     
@@ -17,24 +17,16 @@
 
             <!--Content-->
             <div class="content">
-
-                <a href="">
-                    <div class=" data-card center">
-                        <h4>1. Joseph, 52018022</h4>
-                    </div>
-                </a>
-
-                <a href="">
-                    <div class=" data-card center">
-                        <h4>2. Immanuel, 5201892</h4>
-                    </div>
-                </a>
-
-                <a href="">
-                    <div class=" data-card center">
-                        <h4>3. Meliana, 52018076</h4>
-                    </div>
-                </a>       
+                <% let i = 1 %>
+                <% peserta.forEach(function(foundPeserta){ %> 
+                    <% if (foundPeserta.hadir === true) { %> 
+                        <div class=" data-card center">
+                            <h4><%= i %>.  <%= foundPeserta.peserta %></h4>
+                        </div>
+                        <% i = i+1 %>
+                    <% } %>  
+                <% }); %>
+                       
 
                 <br>
                 <div class="center" style="text-align: center;">

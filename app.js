@@ -55,7 +55,11 @@ db.on("error", console.error.bind(console, "MongoDB Connection Error"));
 const pesertaSchema = new Schema({
     roomId: String,
     userId: String,
-    peserta : Array
+    peserta : Array,
+    hadir: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const Peserta = new mongoose.model("Peserta", pesertaSchema);
@@ -1463,14 +1467,11 @@ app.get("/peserta3", function(req,res){
     res.render("peserta3");
 });
 
-app.get("/Room2", function(req,res){
-    res.render("Room2");
-});
 app.get("/Room3", function(req,res){
     res.render("Room3");
 });
 
-app.get("/qrcode/:roomId", function (req, res) {  
+app.get("/qrcode/r/:roomId", function (req, res) {  
     let barcode = "/cari/"+req.params.roomId;
 
     qrcode.toDataURL(barcode,(err, src)=>{
@@ -1480,8 +1481,65 @@ app.get("/qrcode/:roomId", function (req, res) {
     });
 });
 
-app.get("/scan", function (req,res) {  
-    res.render("barcode-scanner");
+app.get("/qrcode/p/:roomId", function (req, res) {  
+    let barcode = "/hadir/p/"+req.params.roomId;
+
+    qrcode.toDataURL(barcode,(err, src)=>{
+        if (!err) {
+            res.render("lihat-barcode", {qrcode: src});
+        }
+    });
+});
+
+app.get("/scan/room", function (req,res) {  
+    res.render("qrcode-scanner-room");
+});
+
+app.get("/scan/peserta", function (req,res) {  
+    res.render("qrcode-scanner-peserta");
+});
+
+app.post("/hadir/p/:pesertaId", function (req,res) {  
+
+    Peserta.find({_id: req.params.pesertaId}, function (err, foundPeserta) {  
+        if (err) {
+            console.log(err);
+        } else if (foundPeserta) {
+            Peserta.updateOne(
+                {_id: req.params.pesertaId},
+                {
+                    hadir: true
+                },
+                function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Update Succes");
+        
+                    res.redirect("/home");
+                }
+            });
+        }
+    });
+});
+
+app.get("/list/bukutamu/:roomId", function(req,res){
+    
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
+                if (err) {
+                    console.log(err);
+                } else if (foundPeserta) {
+                    res.render("list-bukutamu", {rooms: foundRoom, peserta: foundPeserta});
+                }
+            })
+        }
+    });
+    
+    
 });
 
 app.listen(3000, function() {  

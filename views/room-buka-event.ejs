@@ -1,8 +1,23 @@
 <%- include('partials/header') %>
 
+    <!--Scan Barcode-->
+    <div class="container-fluid">
+        <div class="">
+            <h1 >Scan Barcode</h1>
+            <a href="/scan/peserta">
+                <div class="scan-qr center">
+                    <img class="img-sc-qr" src="/Images/scan-qr.png" alt="Barcode">
+                </div>
+            </a>
+        </div>
+    </div>
+
     <!--Nama Room-->
     <div class="container-fluid" >
         <h1><%= rooms[0].room.kegiatan %></h1>
+
+
+         
 
         <div class="center data-card">
 
@@ -22,7 +37,7 @@
             <a href="">
                 <img class="img-button" src="/Images/open-book.png" alt="">
             </a>
-            <a href="/qrcode/<%= rooms[0]._id %>">
+            <a href="/qrcode/r/<%= rooms[0]._id %>">
                 <img class="img-button" src="/Images/qrcode.png" alt="">  
             </a>
             <a href="">

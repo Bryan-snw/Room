@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<div class="container-fluid" style="padding-top: 0%;">
+  <div class="form-card-info">
+    <h3>Tunjukan Barcode Untuk di Scan</h3>
+  </div>
+
+  <form name="form1" id="form1" method="post"> 
+    <input type="text" id="hasil" hidden name="hasil" class="form-input">
+      <div class="card video-qr">
+          <div class="center scanner">
+              <video id="preview"> </video>
+          </div>
+      </div>
+  </form>
+</div>
+
+<script type="text/javascript">
+
+    document.getElementById("form1").action = "";
+    let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+    scanner.addListener('scan', function (content) {
+      console.log("Scanned");
+      document.getElementById('hasil').value = content;
+      let Varform = content;
+      document.getElementById("form1").action = Varform;
+      
+      alert(content);
+      document.form1.submit();
+  
+    });
+
+    Instascan.Camera.getCameras().then(function (cameras) {
+      if (cameras.length > 0) {
+        scanner.start(cameras[0]);
+      } else {
+        console.error('No cameras found.');
+      }
+    }).catch(function (e) {
+      console.error(e);
+    });
+
+  </script>
+
+<%- include('partials/footer') %>
