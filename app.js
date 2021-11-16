@@ -51,23 +51,6 @@ mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB Connection Error"));
 
-// Barcode Room
-const barcodeRoomSchema = new Schema({
-    qrcode: String,
-    roomId: String
-})
-
-const BarcodeRoom = new mongoose.model("BarcodeRoom", barcodeRoomSchema);
-
-// Barcode Peserta
-// Barcode Room
-const barcodePesertaSchema = new Schema({
-    qrcode: String,
-    pesertaId: String
-})
-
-const BarcodePeserta = new mongoose.model("BarcodePeserta", barcodePesertaSchema);
-
 // ForMyGuest
 const pesertaSchema = new Schema({
     roomId: String,
@@ -1413,7 +1396,6 @@ app.post("/peserta-form-room-buka-bukutamu", function (req, res) {
         }
     });
 
-
 });
 
 // BUKU TAMU - EDIT
@@ -1496,6 +1478,10 @@ app.get("/qrcode/:roomId", function (req, res) {
             res.render("lihat-barcode", {qrcode: src});
         }
     });
+});
+
+app.get("/scan", function (req,res) {  
+    res.render("barcode-scanner");
 });
 
 app.listen(3000, function() {  

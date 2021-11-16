@@ -243,6 +243,13 @@ height: auto;
     width: 50%; 
   }
 
+  .video-qr{
+    background-color: #F5F5F5;
+    border-radius: 10px;
+    padding: 2px;
+    margin: auto;
+  }
+
   .img-card{
     max-height: 100%;
     max-width: 100%;
@@ -375,7 +382,21 @@ height: auto;
       margin: 10%;
   }
 
-  @media (max-width:991px){
+
+
+#preview{
+    padding: 5px;
+    margin: 2px;
+    width: 505px;
+ }
+
+.scanner{
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 3% auto;
+}
+
+@media (max-width:991px){
     .img-header-card{
         width: 50%
     }
@@ -399,5 +420,14 @@ height: auto;
         margin: auto;
         width: 85%; 
       }
-
+      #preview{
+        padding: 5px;
+        margin: 1px;
+        width: 320px;
+     }
+     .scanner{
+        border: 1px solid black;
+        border-radius: 10px;
+        margin: 2px;
+    }
 }
