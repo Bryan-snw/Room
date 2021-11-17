@@ -1642,9 +1642,25 @@ app.get("/pertemuan/:roomId", function (req, res) {
             res.render("pertemuan", {rooms: foundRoom});    
         }
     });
+     
+});
+
+app.get("/pendaftar/:roomId", function (req, res) {  
     
-    
-    
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
+                if (err) {
+                    console.log(err);
+                } else if (foundPeserta) {
+                    res.render("list-pendaftar", {rooms: foundRoom, peserta: foundPeserta});
+                }
+            })    
+        }
+    });
+     
 });
 
 app.listen(3000, function() {  

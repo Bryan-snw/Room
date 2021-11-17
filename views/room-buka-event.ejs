@@ -29,6 +29,8 @@
             <h4><%= rooms[0].ticket.kuotaTicket - rooms[0].pesertaid.length %> Tiket Tersisa</h4>
             <h4> <%= rooms[0].ticket.kuotaTicket %> Kuota Tiket </h4>
             <h4>ID Room: <%= rooms[0]._id %></h4>
+
+            <input type="text" id="roomId" hidden value="<%= rooms[0]._id %>">
         </div>
 
         <br>
@@ -39,7 +41,7 @@
 
         <div class="scan-qr">
     
-            <a href="">
+            <a href="/pendaftar/<%= rooms[0]._id %>">
                 <img class="img-button" src="/Images/group.png" alt="">
             </a>
             <a href="/pertemuan/<%= rooms[0]._id %>">
@@ -48,24 +50,29 @@
             <a href="/qrcode/r/<%= rooms[0]._id %>" data-toggle="tooltip" data-placement="top" title="QrCode Room">
                 <img class="img-button" src="/Images/qrcode.png" alt="">  
             </a>
-            <a href="">
+            <a onclick="myFunction()" data-toggle="tooltip" data-placement="top" title="Salin Id Room">
                 <img class="img-button" src="/Images/copy.png" alt="">
             </a>  
         </div>
         
     </div>
 
-        <!--Scan Barcode-->
-        <div class="container-fluid">
-            
-        </div>
+    <script>
+        function myFunction() {
+            /* Get the text field */
+            var copyText = document.getElementById("roomId");
 
-        <div class="container-fluid">
-            
-        </div>
-        
+            /* Select the text field */
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /* For mobile devices */
 
-    </div>
+            /* Copy the text inside the text field */
+            navigator.clipboard.writeText(copyText.value);
+
+            /* Alert the copied text */
+            alert("Copied the text: " + copyText.value);
+        }
+    </script>
 
     
 

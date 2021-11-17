@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+    <!--Nama Room-->
+    <div class="container-fluid" >
+        <h1><%= rooms[0].room.kegiatan %></h1>
+    </div>
+    
+
+        <!--Pertemuan-->
+        <div class="container-fluid">
+            <!--Header Content-->
+            <div class="header-content">
+                <h4>List Pendafaftar</h4>
+            </div>
+
+            <!--Content-->
+            <div class="content">
+                <% let i = 1 %>
+                <% peserta.forEach(function(foundPeserta){ %> 
+                     
+                    <div class="data-card center">
+                        <div class="row list">
+                            <div class="col-lg-6">
+                                <h4><%= i %>.  <%= foundPeserta.peserta %></h4>
+                            </div>
+                        </div> 
+                    </div>
+                    <% i = i+1 %>
+                      
+                <% }); %>
+                       
+
+                <br>
+                <div class="center" style="text-align: center;">
+                    <button class="btn mk-btn-submit" type="submit">Export</button>
+                </div>
+
+            </div>
+
+            
+
+        </div>
+
+    
+<%- include('partials/footer') %>
