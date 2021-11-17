@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 
 <!--Pertemuan-->
-<div class="container-fluid">
+<div class="container-fluid" style="padding-top: 0%;">
     <!--Header Content-->
     <div class="header-content">
         <div class="row">
@@ -19,24 +19,15 @@
 
     <!--Content-->
     <div class="content">
-
-        <a href="/list/bukutamu/<%= rooms[0]._id %>">
-            <div class=" scan-qr center">
-                <h4>Pertemuan 1</h4>
-            </div>
-        </a>
-
-        <a href="">
-            <div class=" scan-qr center">
-                <h4>Pertemuan 2</h4>
-            </div>
-        </a>
-
-        <a href="">
-            <div class=" scan-qr center">
-                <h4>Pertemuan 2</h4>
-            </div>
-        </a>       
+        <% let i = 0; %> 
+        <% rooms[0].tanggal.forEach(function(foundTanggal){ %> 
+            <a href="/list/bukutamu/<%= i %> /<%= rooms[0]._id %>">
+                <div class=" scan-qr center">
+                    <h4><%= foundTanggal %> </h4>
+                </div>
+            </a>
+            <% i = i + 1; %> 
+        <% }); %>
 
         <br>
         <div class="center" style="text-align: center;">

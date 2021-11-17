@@ -1,33 +1,41 @@
 <%- include('partials/header') %>
 
-    <!--Scan Barcode-->
-    <div class="container-fluid">
+    <!--Nama Room-->
+    <div class="container-fluid" style="padding-top: 0%;" >
+        <h1><%= rooms[0].room.kegiatan %></h1>
+
+        <hr style="border-top: 2px solid black;">
+
+        <!--Scan Barcode-->
         <div class="">
-            <h1 >Scan Barcode</h1>
+            <h1>Scan Barcode</h1>
             <a href="/scan/peserta">
                 <div class="scan-qr center">
                     <img class="img-sc-qr" src="/Images/scan-qr.png" alt="Barcode">
                 </div>
             </a>
         </div>
-    </div>
 
-    <!--Nama Room-->
-    <div class="container-fluid" >
-        <h1><%= rooms[0].room.kegiatan %></h1>
-
-
-         
+        <br>
+        <div class="centers">
+            <hr class="border">
+        </div>  
+        <br>
 
         <div class="center data-card">
-
             <h4>Tanggal: <%= rooms[0].room.tanggal %> </h4>
             <h4><%= rooms[0].room.lokasi %>, <%= rooms[0].room.kota %></h4>
-            <h4>10 Tiket Terjual</h4>
-            <h4><%= rooms[0].ticket.kuotaTicket %> Tiket Tersisa</h4>
+            <h4><%= rooms[0].pesertaid.length %>  Tiket Terjual</h4>
+            <h4><%= rooms[0].ticket.kuotaTicket - rooms[0].pesertaid.length %> Tiket Tersisa</h4>
+            <h4> <%= rooms[0].ticket.kuotaTicket %> Kuota Tiket </h4>
             <h4>ID Room: <%= rooms[0]._id %></h4>
-            
         </div>
+
+        <br>
+        <div class="centers">
+            <hr class="border">
+        </div>  
+        <br>
 
         <div class="scan-qr">
     
@@ -35,19 +43,27 @@
                 <img class="img-button" src="/Images/group.png" alt="">
             </a>
             <a href="/pertemuan/<%= rooms[0]._id %>">
-                <img class="img-button" src="/Images/open-book.png" alt="">
+                <img class="img-button" src="/Images/open-book.png" alt="" data-toggle="tooltip" data-placement="top" title="Daftar Buku Tamu">
             </a>
-            <a href="/qrcode/r/<%= rooms[0]._id %>">
+            <a href="/qrcode/r/<%= rooms[0]._id %>" data-toggle="tooltip" data-placement="top" title="QrCode Room">
                 <img class="img-button" src="/Images/qrcode.png" alt="">  
             </a>
             <a href="">
                 <img class="img-button" src="/Images/copy.png" alt="">
-            </a>
-           
-            
-            
+            </a>  
+        </div>
+        
+    </div>
+
+        <!--Scan Barcode-->
+        <div class="container-fluid">
             
         </div>
+
+        <div class="container-fluid">
+            
+        </div>
+        
 
     </div>
 
