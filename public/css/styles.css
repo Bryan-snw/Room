@@ -396,6 +396,14 @@ height: auto;
     margin: 3% auto;
 }
 
+.waktu{
+    text-align: right;
+}
+
+.list{
+    margin: 1%;
+}
+
 @media (max-width:991px){
     .img-header-card{
         width: 50%
@@ -429,5 +437,8 @@ height: auto;
         border: 1px solid black;
         border-radius: 10px;
         margin: 2px;
+    }
+    .waktu{
+        text-align: left;
     }
 }

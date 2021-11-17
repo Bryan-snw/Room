@@ -26,6 +26,10 @@ let listForm = [];
 let formPeserta = [];
 let pesertaId = [];
 let infotiket = {};
+let tanggalRoomArr = [];
+let tanggalPesertaArr = [];
+let waktuArr = [];
+let hadirArr = [];
 let edit = false;
 const Schema = mongoose.Schema;
 const app = express();
@@ -55,11 +59,10 @@ db.on("error", console.error.bind(console, "MongoDB Connection Error"));
 const pesertaSchema = new Schema({
     roomId: String,
     userId: String,
-    peserta : Array,
-    hadir: {
-        type: Boolean,
-        default: false
-    }
+    peserta: Array,
+    hadir: Array,
+    tanggal: Array,
+    waktu: Array
 });
 
 const Peserta = new mongoose.model("Peserta", pesertaSchema);
@@ -79,7 +82,8 @@ const myroomSchema = new Schema({
     {
         data: Buffer,
         contentType: String
-    }
+    },
+    tanggal: Array
 });
 
 const MyRoom = new mongoose.model("Myroom", myroomSchema);
@@ -297,10 +301,17 @@ app.get("/verifikasi/:token", function(req, res){
 
 app.get("/home", function(req,res){
     
-    infoRoom ={};
-    infotiket={};
+    infoRoom = {};
     listForm = [];
-    formPeserta=[];
+    formPeserta = [];
+    pesertaId = [];
+    infotiket = {};
+    tanggalRoomArr = [];
+    tanggalPesertaArr = [];
+    waktuArr = [];
+    hadirArr = [];
+    edit = false;
+
     if (req.isAuthenticated()) {
 
         MyRoom.find({userid: req.user.id}, function (err, foundRoom) {  
@@ -1155,61 +1166,73 @@ app.post("/daftar/room-ticket/:roomId", function (req,res) {
 
 });
 
+// Event POST
 app.post("/peserta/form/room/event/:roomId", function (req, res) {  
 
     MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
         if (err) {
             console.log(err);
         } else if (foundRoom) {
+
+            console.log(foundRoom[0].pesertaid);
+
             foundRoom[0].pesertaid.forEach(function (foundId) {  
-                console.log(foundId);
+                console.log("Found Id "+foundId);
                 pesertaId.push(foundId);
+                console.log("Array Peserta Id : "+ pesertaId);
+                
             });
+
+            console.log(pesertaId);
+            pesertaId.push(req.user.id);
+            console.log(pesertaId);
+
+
+            let lists = req.body;
+            console.log(lists);
+            for (var key in lists) {
+                if (lists.hasOwnProperty(key)) {
+                    console.log(key + " -> " + lists[key]);
+                    formPeserta.push(lists[key]);
+                }
+            }
+            console.log(formPeserta);
+
+
+            MyRoom.updateOne(
+                {_id: req.params.roomId},
+                {
+                   pesertaid: pesertaId
+                },
+                function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Update Room Succes");
+                }
+            });
+
+
+            const newPeserta = new Peserta({
+                roomId: req.params.roomId,
+                userId: req.user.id,
+                peserta: formPeserta
+            });
+            
+            newPeserta.save(function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Peserta add Succesfully");
+                }
+            });
+        
+            formPeserta=[];
+            pesertaId=[];
+        
+            res.redirect("/home");
         }
     });
-
-    pesertaId.push(req.user.id);
-
-    let lists = req.body;
-    console.log(lists);
-    for (var key in lists) {
-        if (lists.hasOwnProperty(key)) {
-            console.log(key + " -> " + lists[key]);
-            formPeserta.push(lists[key]);
-        }
-    }
-
-    MyRoom.updateOne(
-        {_id: req.params.roomId},
-        {
-           pesertaid: pesertaId
-        },
-        function (err) {  
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("Update Succes");
-        }
-    });
-
-    const newPeserta = new Peserta({
-        roomId: req.params.roomId,
-        userId: req.user.id,
-        peserta: formPeserta
-    });
-    
-    newPeserta.save(function (err) {  
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("Peserta add Succesfully");
-        }
-    });
-
-    formPeserta=[];
-    pesertaid=[];
-
-    res.redirect("/home");
 
 });
 
@@ -1304,66 +1327,74 @@ app.post("/peserta-form-room-buka-event", function (req, res) {
     });
 });
 
-// BUKU TAMU
-app.post("/peserta-form-room-bukutamu", function (req, res) {  
+// BUKU TAMU POST
+app.post("/peserta-form-room-bukutamu/:roomId", function (req, res) {  
     
 
-    MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
         if (err) {
             console.log(err);
         } else if (foundRoom) {
+
+            console.log(foundRoom[0].pesertaid);
+
             foundRoom[0].pesertaid.forEach(function (foundId) {  
-                console.log(foundId);
+                console.log("Found Id "+foundId);
                 pesertaId.push(foundId);
+                console.log("Array Peserta Id : "+ pesertaId);
+                
             });
+
+            console.log(pesertaId);
+            pesertaId.push(req.user.id);
+            console.log(pesertaId);
+
+
+            let lists = req.body;
+            console.log(lists);
+            for (var key in lists) {
+                if (lists.hasOwnProperty(key)) {
+                    console.log(key + " -> " + lists[key]);
+                    formPeserta.push(lists[key]);
+                }
+            }
+            console.log(formPeserta);
+
+
+            MyRoom.updateOne(
+                {_id: req.params.roomId},
+                {
+                   pesertaid: pesertaId
+                },
+                function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Update Room Succes");
+                }
+            });
+
+
+            const newPeserta = new Peserta({
+                roomId: req.params.roomId,
+                userId: req.user.id,
+                peserta: formPeserta
+            });
+            
+            newPeserta.save(function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Peserta add Succesfully");
+                }
+            });
+        
+            formPeserta=[];
+            pesertaId=[];
+        
+            res.redirect("/home");
         }
     });
-
-    pesertaId.push(req.user.id);
-
-    let lists = req.body;
-    console.log(lists);
-    for (var key in lists) {
-        if (lists.hasOwnProperty(key)) {
-            console.log(key + " -> " + lists[key]);
-            formPeserta.push(lists[key]);
-        }
-    }
-    console.log(formPeserta);
-
-
-    MyRoom.updateOne(
-        {_id: infoRoom.roomId},
-        {
-           pesertaid: pesertaId
-        },
-        function (err) {  
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("Update Succes");
-        }
-    });
-
-
-    const newPeserta = new Peserta({
-        roomId: infoRoom.roomId,
-        userId: req.user.id,
-        peserta: formPeserta
-    });
-    
-    newPeserta.save(function (err) {  
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("Peserta add Succesfully");
-        }
-    });
-
-    formPeserta=[];
-    pesertaid=[];
-
-    res.redirect("/home");
 
 });
 
@@ -1501,14 +1532,72 @@ app.get("/scan/peserta", function (req,res) {
 
 app.post("/hadir/p/:pesertaId", function (req,res) {  
 
+    let today = new Date();
+    let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
     Peserta.find({_id: req.params.pesertaId}, function (err, foundPeserta) {  
         if (err) {
             console.log(err);
         } else if (foundPeserta) {
+            
+            // Tanggal Pertemuan Room
+            MyRoom.find({_id: foundPeserta[0].roomId}, function (err, foundRoom) {  
+                if (err) {
+                    console.log(err);
+                } else if (foundRoom) {
+                    foundRoom[0].tanggal.forEach(function (foundTglR) {  
+                        console.log(foundTglR);
+                        tanggalRoomArr.push(foundTglR);
+                    });
+                }
+            });
+
+            // Tanggal Pertemuan peserta
+            foundPeserta[0].tanggal.forEach(function (foundTgl) {  
+                console.log(foundTgl);
+                tanggalPesertaArr.push(foundTgl);
+            });
+
+            // Waktu Hadir
+            foundPeserta[0].waktu.forEach(function (foundWaktu) {  
+                console.log(foundWaktu);
+                waktuArr.push(foundWaktu);
+            });
+
+            // status kehadiran
+            foundPeserta[0].hadir.forEach(function (foundKehadiran) {  
+                console.log(foundKehadiran);
+                hadirArr.push(foundKehadiran);
+            });
+            
+            if (!tanggalRoomArr.includes(date)) {
+                tanggalRoomArr.push(date);
+            }
+
+            tanggalPesertaArr.push(date);
+            waktuArr.push(time);
+            hadirArr.push("True");
+
+            MyRoom.updateOne(
+                {_id: foundPeserta[0].roomId},
+                {
+                    tanggal: tanggalRoomArr,
+                },
+                function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Update Succes");
+                }
+            });
+                
             Peserta.updateOne(
                 {_id: req.params.pesertaId},
                 {
-                    hadir: true
+                    hadir: hadirArr,
+                    tanggal: tanggalPesertaArr,
+                    waktu: waktuArr
                 },
                 function (err) {  
                 if (err) {
@@ -1523,8 +1612,9 @@ app.post("/hadir/p/:pesertaId", function (req,res) {
     });
 });
 
-app.get("/list/bukutamu/:roomId", function(req,res){
-    
+app.get("/list/bukutamu/:index/:roomId", function(req,res){
+    console.log(req.params.index);
+
     MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
         if (err) {
             console.log(err);
@@ -1533,11 +1623,26 @@ app.get("/list/bukutamu/:roomId", function(req,res){
                 if (err) {
                     console.log(err);
                 } else if (foundPeserta) {
-                    res.render("list-bukutamu", {rooms: foundRoom, peserta: foundPeserta});
+                    res.render("list-bukutamu", {rooms: foundRoom, peserta: foundPeserta, index: req.params.index});
                 }
             })
         }
     });
+    
+    
+});
+
+app.get("/pertemuan/:roomId", function (req, res) {  
+    
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+
+            res.render("pertemuan", {rooms: foundRoom});    
+        }
+    });
+    
     
     
 });

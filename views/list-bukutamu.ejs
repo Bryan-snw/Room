@@ -3,7 +3,9 @@
     <!--Nama Room-->
     <div class="container-fluid" >
         <h1><%= rooms[0].room.kegiatan %></h1>
-        <h4>Tanggal: 19-10-2021</h4>
+        <h1><% let idx = Number(index); %> </h1>
+        <h4>Tanggal: <%= rooms[0].tanggal[idx] %> </h4>
+
     </div>
     
 
@@ -19,9 +21,16 @@
             <div class="content">
                 <% let i = 1 %>
                 <% peserta.forEach(function(foundPeserta){ %> 
-                    <% if (foundPeserta.hadir === true) { %> 
-                        <div class=" data-card center">
-                            <h4><%= i %>.  <%= foundPeserta.peserta %></h4>
+                    <% if (foundPeserta.hadir[idx] === "True") { %> 
+                        <div class="data-card center">
+                            <div class="row list">
+                                <div class="col-lg-6">
+                                    <h4><%= i %>.  <%= foundPeserta.peserta %></h4>
+                                </div>
+                                <div class="col-lg-6">
+                                    <h5 class="waktu">Waktu: <%= foundPeserta.waktu[idx] %></h5>
+                                </div>
+                            </div> 
                         </div>
                         <% i = i+1 %>
                     <% } %>  

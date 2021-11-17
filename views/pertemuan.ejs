@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<!--Pertemuan-->
+<div class="container-fluid">
+    <!--Header Content-->
+    <div class="header-content">
+        <div class="row">
+
+            <div class="col-lg-6 d-flex justify-content-left">
+                <h1>Pertemuan</h1>
+            </div>
+
+            <div class="col-lg-6">
+                <h5 class="show-all"><a href="tampilsemua">Urutkan</a></h5>
+            </div>
+
+        </div>
+    </div>
+
+    <!--Content-->
+    <div class="content">
+
+        <a href="/list/bukutamu/<%= rooms[0]._id %>">
+            <div class=" scan-qr center">
+                <h4>Pertemuan 1</h4>
+            </div>
+        </a>
+
+        <a href="">
+            <div class=" scan-qr center">
+                <h4>Pertemuan 2</h4>
+            </div>
+        </a>
+
+        <a href="">
+            <div class=" scan-qr center">
+                <h4>Pertemuan 2</h4>
+            </div>
+        </a>       
+
+        <br>
+        <div class="center" style="text-align: center;">
+            <button class="btn mk-btn-submit" type="submit">Export</button>
+        </div>
+
+    </div>
+
+    <%- include('partials/footer') %>
