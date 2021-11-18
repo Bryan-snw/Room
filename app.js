@@ -19,6 +19,8 @@ const path = require("path");
 const multer = require("multer");
 const { application } = require('express');
 const qrcode = require("qrcode");
+const converter = require('json-2-csv');
+
 
 // Variables
 let infoRoom = {};
@@ -31,6 +33,7 @@ let tanggalPesertaArr = [];
 let waktuArr = [];
 let hadirArr = [];
 let edit = false;
+let list = [];
 const Schema = mongoose.Schema;
 const app = express();
 
@@ -311,6 +314,7 @@ app.get("/home", function(req,res){
     waktuArr = [];
     hadirArr = [];
     edit = false;
+    list = [];
 
     if (req.isAuthenticated()) {
 
@@ -1661,6 +1665,68 @@ app.get("/pendaftar/:roomId", function (req, res) {
         }
     });
      
+});
+
+app.post("/download/:index/:roomId", function (req,res) {  
+    MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+        if (err) {
+            console.log(err);
+        } else if (foundRoom) {
+            Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
+                if (err) {
+                    console.log(err);
+                } else if (foundPeserta) {
+                    foundPeserta.forEach(function (pesertas) {
+                        
+                        if (pesertas.hadir[req.params.index] === "True") {
+                            let i = 0;  
+                            let forms = {};
+                            forms["Tanggal"] = pesertas.tanggal[req.params.index];
+                            foundRoom[0].form.forEach(function (form) {  
+                                console.log(form+": "+ pesertas.peserta[i]);
+                                forms[form] = pesertas.peserta[i];
+                                i = i + 1;
+                            });
+                            
+                            list.push(forms);
+                        }
+                        
+                    });
+                    console.log(list);
+
+                    converter.json2csv(list, (err, csv) => {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        console.log(csv);
+
+                        fs.writeFileSync("list-bukutamu.csv", csv);
+                    });
+
+                    res.redirect("/download");
+                    
+                }
+            })    
+        }
+    });
+});
+
+app.get("/download", function (req,res) {  
+    res.download("list-bukutamu.csv", function (err) {  
+        if (err) {
+            console.log(err);
+        } else {
+            fs.unlink("list-bukutamu.csv", function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("File Terdownload & DIhapus");
+                    list = [];
+                }
+            });
+        }
+    });
 });
 
 app.listen(3000, function() {  

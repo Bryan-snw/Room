@@ -20,8 +20,9 @@
     <!--Content-->
     <div class="content">
         <% let i = 0; %> 
-        <% rooms[0].tanggal.forEach(function(foundTanggal){ %> 
-            <a href="/list/bukutamu/<%= i %> /<%= rooms[0]._id %>">
+        <% let ada = false; %> 
+        <% rooms[0].tanggal.forEach(function(foundTanggal){ %>  
+            <a href="/list/bukutamu/<%= i %>/<%= rooms[0]._id %>">
                 <div class=" scan-qr center">
                     <h4><%= foundTanggal %> </h4>
                 </div>
@@ -31,9 +32,18 @@
 
         <br>
         <div class="center" style="text-align: center;">
-            <button class="btn mk-btn-submit" type="submit">Export</button>
+            <button class="btn mk-btn-submit" id="kirim" type="submit">Export</button>
         </div>
 
     </div>
+
+    <script>
+        console.log(room[0].tanggal.length);
+        if (room[0].tanggal.length < 0) {
+            document.getElementById("kirim").style.visibility = "hidden";
+        } else if (room[0].tanggal.length > 0) {
+            document.getElementById("kirim").style.visibility = "visible";
+        }
+    </script>
 
     <%- include('partials/footer') %>
