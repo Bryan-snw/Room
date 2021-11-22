@@ -3,7 +3,7 @@
     <!--Content-->
     <div class="container-fluid">
         <div class="">
-            <form action="/peserta/form/room/event/<%= rooms[0]._id %> " method="post">
+            <form action="/peserta/form/room/event/<%= rooms[0]._id %>" method="post">
             <h1>Room Info</h1>
             <div class="card room">
                 <a href="">
@@ -19,6 +19,29 @@
                         <div class="mb-3">
                             <h4><%= rooms[0].room.deskripsi %></h4>
                         </div>
+
+                        <div class="mb-3">
+                            <div class="row">
+
+                                <div class="col-lg-6 d-flex justify-content-left">
+                                    <h4>1x Tiket <%= rooms[0].room.deskripsi %></h4>
+                                </div>
+                
+                                <div class="col-lg-6">
+                                    <h5 class="show-all">IDR <%= rooms[0].ticket.hargaTicket %> </h5>
+                                </div>
+                                <hr>
+                                <div class="col-lg-6 d-flex justify-content-left">
+                                    <h4>Subtotal</h4>
+                                </div>
+                
+                                <div class="col-lg-6">
+                                    <h5 class="show-all">IDR <%= rooms[0].ticket.hargaTicket %> </h5>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+
                         <% let i = 0 %>
                         <% rooms[0].form.forEach(function (list) { %>     
                             <div class="mb-3">
@@ -32,7 +55,7 @@
                   
             </div>
             <div class="center" style="text-align: center;">
-                <button class="btn mk-btn-submit" type="submit">Simpan</button>
+                <button class="btn mk-btn-submit" type="submit">Beli</button>
             </div>
             </form>
             

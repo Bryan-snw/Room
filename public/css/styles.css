@@ -411,6 +411,31 @@ height: auto;
     padding: 1px;
 }
 
+.note{
+    color: red;
+    font-size: 14px;
+}
+
+.logo-bank{ 
+    text-align: right;
+}
+
+.img-bank{
+    width: 15%;
+}
+
+.btn-pembayaran{
+    margin: 5px;
+}
+
+.bank-text{
+    margin: 5% auto;
+}
+
+.transaksi{
+    text-align: center;
+}
+
 @media (max-width:991px){
     .img-header-card{
         width: 50%
@@ -446,6 +471,16 @@ height: auto;
         margin: 2px;
     }
     .waktu{
+        text-align: left;
+    }
+    .logo-bank{ 
+        text-align: left;
+    }
+    
+    .img-bank{
+        width: 20%;
+    }
+    .transaksi{
         text-align: left;
     }
 }

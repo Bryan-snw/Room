@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+
+    <div class="container-fluid">
+        
+        <% transaksi.forEach(function (foundTransaksi) { %> 
+            <a href="/pembayaran/<%= foundTransaksi.roomId %>/<%= foundTransaksi.userId %> ">
+                <div class="room card">
+                    <div class="row transaksi">
+                        <div class="col-lg-4">
+                            <h4>1x Ticket <%= foundTransaksi.namaKegiatan %></h4>
+                        </div>
+                        <div class="col-lg-4">
+                            <h4>IDR <%= foundTransaksi.hargaTicket %></h4>
+                        </div>
+                        <div class="col-lg-4">
+                            <h4>Status: <%= foundTransaksi.statusPembayaran %></h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        <% }); %>  
+    </div>
+
+<%- include('partials/footer') %>

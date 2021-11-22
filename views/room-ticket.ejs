@@ -20,13 +20,27 @@
                         </div>
 
                         <div class="mb-3">
+                          <label for="exampleFormControlInput1" class="form-label">Kuota Tiket</label>
+                          <input type="number" min="1" class="form-control" name="kuotaTiket" id="kuotaTiket">
+                        </div>
+
+                        <div class="mb-3" id="formHarga">
                             <label for="exampleFormControlInput1" class="form-label">Harga Tiket</label>
-                            <input type="number" min="0" class="form-control" name="hargaTiket" id="hargaTiket" placeholder="50.000">
+                            <input  type="number" min="0" class="form-control" name="hargaTiket" id="hargaTiket" placeholder="50.000">
+                            <h6 class="note" id="note1">
+                              *Pihak Room akan mengambil fee IDR 2.000 untuk harga tiket < IDR 50.000. dan fee sebesar 4% untuk harga tiket > IDR 50.000
+                            </h6>
                         </div>
+
                         <div class="mb-3">
-                            <label for="exampleFormControlInput1" class="form-label">Kuota Tiket</label>
-                            <input type="number" min="0" class="form-control" name="kuotaTiket" id="kuotaTiket">
-                        </div>
+                          <label for="exampleFormControlInput1" class="form-label">Fee </label>
+                          <input type="number" min="0" class="form-control" disabled name="fee" id="fee">
+                          <h6 class="note" id="note">
+                            *Fee yang akan diambil
+                          </h6>
+                       </div>
+
+                        
         
             
                     </div>
@@ -42,13 +56,50 @@
 
     <script>
 
+      function jenis() {  
+        if (document.getElementById("jenisTiket").value === "Gratis") {
+          document.getElementById("hargaTiket").disabled = true;
+          document.getElementById("note1").style.color = "grey";
+          document.getElementById("note").style.color = "grey";
+       
+        } else {
+          document.getElementById("hargaTiket").disabled = false;
+          document.getElementById("note1").style.color = "red";
+          document.getElementById("note").style.color = "red";
+        }
+      }
+
+      $("#jenisTiket").change(jenis);
+
+      function fee() {
+        // alert(document.getElementById("hargaTiket").value);
+        let harga = document.getElementById("hargaTiket").value;
+        if (harga <= 50000) {
+          harga = 2000;
+        } else {
+          harga = harga * 0.04;
+        }
+        document.getElementById("fee").value = harga;
+        $("#hargaTiket").val()
+      }
+
+      $("#hargaTiket").change(fee);
+
+
+
       $(document).ready(function() {  
         $('#custNameNext').prop('disabled', true);  
     
         function validateNextButton() { 
-            var buttonDisabled = $('#hargaTiket').val().trim() === ""
-            || $('#kuotaTiket').val().trim() === "";
-            $('#kirim').prop('disabled', buttonDisabled); 
+            if (document.getElementById("jenisTiket").value === "Berbayar") {
+              var buttonDisabled = $('#hargaTiket').val().trim() === ""
+              || $('#kuotaTiket').val().trim() === "";
+              $('#kirim').prop('disabled', buttonDisabled);
+            } else {
+              var buttonDisabled = $('#kuotaTiket').val().trim() === "";
+              $('#kirim').prop('disabled', buttonDisabled);
+            }
+             
           } 
           
           $("#hargaTiket").click(validateNextButton);

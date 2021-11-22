@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+
+    <div class="container-fluid" >
+        <div class="card room">
+            <div class="row">
+                
+                <div class="col-lg-6 justify-content-left">
+                    <h4>Total Tagihan</h4>
+                </div>
+
+                <div class="col-lg-6">
+                    <h5 class="show-all">IDR <%= transaksi[0].hargaTicket %>   </h5>
+                </div>
+
+            </div>
+        </div>
+        <div class="card room">
+            <div class="row">
+                
+                <div class="col-lg-6">
+                    <h4 class="bank-text">Bank BTPN</h4>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="logo-bank">
+                        <img class="img-bank" src="/Images/btpn.png" alt="">
+                    </div>
+                </div>
+
+            </div>
+            <hr>
+            <div class="card-body">
+                <h4>No Rekening</h4>
+                <h5>90350152658</h5>
+                <h5>a.n JUDITH BRYAN LEONARD SIE</h5>
+            </div>
+        </div>
+        
+        <div class="card room">
+            <div class="card-body" style="text-align: center;">
+                <a class="btn btn-outline-dark btn-pembayaran" href="/home">Tutup</a>
+
+                <p class="small-text">Atau</p>
+                
+                <a class="btn btn-outline-primary btn-pembayaran" role="button" class="card room" data-toggle="modal" data-target="#ModalKonfirmasi">Klik Jika Anda Sudah Membayar</a>
+            </div>
+            
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="ModalKonfirmasi" tabindex="-1" role="dialog" aria-labelledby="ModalKonfirmasi" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">isi Formulir Jika Anda Sudah Membayar</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="submit_form" action="/konfirmasi/transaksi/<%= transaksi[0].roomId %>/<%= transaksi[0].userId %>" method="post">
+                      <div class="modal-body">
+                        <label for="exampleFormControlInput1" class="form-label">Nama Pengirim</label>
+                        <input required type="text" name="namaPengirim" class="form-control" id="exampleFormControlInput1" placeholder="John">
+                        <label for="exampleFormControlInput1" class="form-label">Bank</label>
+                        <input required type="text" name="namaBank" class="form-control" id="exampleFormControlInput1" placeholder="BCA">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-outline-primary">Sudah</button>
+                        <button type="button" data-dismiss="modal" class="btn btn-outline-primary">Tutup</button>
+                      </div>
+                    </form>
+                </div>
+            </div>
+          </div>
+
+    </div>
+
+    <script type="text/javascript">
+        function form_submit() {
+          document.getElementById("submit_form").submit();
+         }    
+    </script>
+
+<%- include('partials/footer') %>
