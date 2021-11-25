@@ -34,6 +34,7 @@ let waktuArr = [];
 let hadirArr = [];
 let edit = false;
 let list = [];
+let tanggal = "";
 const Schema = mongoose.Schema;
 const app = express();
 
@@ -1645,6 +1646,7 @@ app.post("/hadir/p/:pesertaId", function (req,res) {
 
     let today = new Date();
     let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+    // let date = "26-11-2021";
     let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
     Peserta.find({_id: req.params.pesertaId}, function (err, foundPeserta) {  
@@ -1657,68 +1659,98 @@ app.post("/hadir/p/:pesertaId", function (req,res) {
                 if (err) {
                     console.log(err);
                 } else if (foundRoom) {
+                    
                     foundRoom[0].tanggal.forEach(function (foundTglR) {  
-                        console.log(foundTglR);
+                        console.log("foundRoom[0].tanggal "+foundTglR);
                         tanggalRoomArr.push(foundTglR);
                     });
+                    console.log("tanggalRoomArr setelah push "+ tanggalRoomArr);
+
+                    // cek hari yang sama atau bukan
+                    if (!tanggalRoomArr.includes(date)) {
+                        tanggalRoomArr.push(date);
+
+                        console.log("tanggalRoomArr setelah di cek ada ndk "+ tanggalRoomArr);
+
+                        MyRoom.updateOne(
+                            {_id: foundPeserta[0].roomId},
+                            {
+                                tanggal: tanggalRoomArr,
+                            },
+                            function (err) {  
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log("Update room Succes");
+                            }
+                        });
+                    }
+                    
                 }
             });
 
             // Tanggal Pertemuan peserta
             foundPeserta[0].tanggal.forEach(function (foundTgl) {  
-                console.log(foundTgl);
+                console.log("foundPeserta[0].tanggal " +foundTgl);
                 tanggalPesertaArr.push(foundTgl);
             });
 
+            
             // Waktu Hadir
             foundPeserta[0].waktu.forEach(function (foundWaktu) {  
-                console.log(foundWaktu);
+                console.log("foundPeserta[0].waktu "+foundWaktu);
                 waktuArr.push(foundWaktu);
             });
 
             // status kehadiran
             foundPeserta[0].hadir.forEach(function (foundKehadiran) {  
-                console.log(foundKehadiran);
+                console.log("foundPeserta[0].hadir " +foundKehadiran);
                 hadirArr.push(foundKehadiran);
             });
             
-            if (!tanggalRoomArr.includes(date)) {
-                tanggalRoomArr.push(date);
+            // Cek peserta sudah absen pada hari itu belum
+            if (!tanggalPesertaArr.includes(date)) {
+
+                let statusHadir = {};
+
+                statusHadir[date] = "True";
+
+                console.log(statusHadir);
+
+                tanggalPesertaArr.push(date);
+                waktuArr.push(time);
+                hadirArr.push(statusHadir);
+
+                console.log("1 tanggal peserta ARR " + tanggalPesertaArr);
+                console.log("1 waktu ARR " + waktuArr);
+                console.log("1 hadir ARR " + hadirArr[0]);
+
+                Peserta.updateOne(
+                    {_id: req.params.pesertaId},
+                    {
+                        hadir: hadirArr,
+                        tanggal: tanggalPesertaArr,
+                        waktu: waktuArr
+                    },
+                    function (err) {  
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("Update peserta Succes");
+            
+                        res.redirect("/home");
+                    }
+                });
             }
 
-            tanggalPesertaArr.push(date);
-            waktuArr.push(time);
-            hadirArr.push("True");
 
-            MyRoom.updateOne(
-                {_id: foundPeserta[0].roomId},
-                {
-                    tanggal: tanggalRoomArr,
-                },
-                function (err) {  
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Update Succes");
-                }
-            });
+            console.log("tanggal peserta ARR " + tanggalPesertaArr);
+            console.log("waktu ARR " + waktuArr);
+            console.log("hadir ARR " + hadirArr);
+
+            
                 
-            Peserta.updateOne(
-                {_id: req.params.pesertaId},
-                {
-                    hadir: hadirArr,
-                    tanggal: tanggalPesertaArr,
-                    waktu: waktuArr
-                },
-                function (err) {  
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Update Succes");
-        
-                    res.redirect("/home");
-                }
-            });
+            
         }
     });
 });
@@ -1779,24 +1811,37 @@ app.post("/download/:index/:roomId", function (req,res) {
         if (err) {
             console.log(err);
         } else if (foundRoom) {
+
+            console.log(foundRoom[0].tanggal[req.params.index]);
+            tanggal = foundRoom[0].tanggal[req.params.index]
+
+
             Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
                 if (err) {
                     console.log(err);
                 } else if (foundPeserta) {
+                    
                     foundPeserta.forEach(function (pesertas) {
-                        
-                        if (pesertas.hadir[req.params.index] === "True") {
-                            let i = 0;  
-                            let forms = {};
-                            forms["Tanggal"] = pesertas.tanggal[req.params.index];
-                            foundRoom[0].form.forEach(function (form) {  
-                                console.log(form+": "+ pesertas.peserta[i]);
-                                forms[form] = pesertas.peserta[i];
-                                i = i + 1;
-                            });
-                            
-                            list.push(forms);
-                        }
+                    
+
+                        pesertas.hadir.forEach(function(Hadir) {  
+
+                            console.log(Hadir[tanggal]);
+
+                            if (Hadir[tanggal] === "True") {
+                                let i = 0;  
+                                let forms = {};
+                                forms["Tanggal"] = tanggal;
+                                foundRoom[0].form.forEach(function (form) {  
+                                    console.log(form+": "+ pesertas.peserta[i]);
+                                    forms[form] = pesertas.peserta[i];
+                                    i = i + 1;
+                                });
+                                
+                                list.push(forms);
+                            } 
+
+                        });
                         
                     });
                     console.log(list);
@@ -1808,7 +1853,7 @@ app.post("/download/:index/:roomId", function (req,res) {
 
                         console.log(csv);
 
-                        fs.writeFileSync("list-bukutamu.csv", csv);
+                        fs.writeFileSync("list-bukutamu-"+tanggal+".csv", csv);
                     });
 
                     res.redirect("/download");
@@ -1820,16 +1865,17 @@ app.post("/download/:index/:roomId", function (req,res) {
 });
 
 app.get("/download", function (req,res) {  
-    res.download("list-bukutamu.csv", function (err) {  
+    res.download("list-bukutamu-"+tanggal+".csv", function (err) {  
         if (err) {
             console.log(err);
         } else {
-            fs.unlink("list-bukutamu.csv", function (err) {  
+            fs.unlink("list-bukutamu-"+tanggal+".csv", function (err) {  
                 if (err) {
                     console.log(err);
                 } else {
                     console.log("File Terdownload & DIhapus");
                     list = [];
+                    tanggal = "";
                 }
             });
         }

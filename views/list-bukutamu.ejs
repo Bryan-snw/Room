@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 
     <!--Nama Room-->
-    <div class="container-fluid" >
+    <div class="container-fluid-top" >
         <h1><%= rooms[0].room.kegiatan %></h1>
         <h1><% let idx = Number(index); %> </h1>
         <h4>Tanggal: <%= rooms[0].tanggal[idx] %> </h4>
@@ -22,20 +22,26 @@
                 <% let i = 1 %>
                 <% let ada = false %> 
                 <% peserta.forEach(function(foundPeserta){ %> 
-                    <% if (foundPeserta.hadir[idx] === "True") { %> 
-                        <% ada = true; %> 
-                        <div class="data-card center">
-                            <div class="row list">
-                                <div class="col-lg-6">
-                                    <h4><%= i %>.  <%= foundPeserta.peserta %></h4>
-                                </div>
-                                <div class="col-lg-6">
-                                    <h5 class="waktu">Waktu: <%= foundPeserta.waktu[idx] %></h5>
-                                </div>
-                            </div> 
-                        </div>
-                        <% i = i+1 %>
-                    <% } %>  
+
+                    <% foundPeserta.hadir.forEach(function(hadir){ %>
+
+                        <% if (hadir[rooms[0].tanggal[idx]] === "True") { %> 
+                            <% ada = true; %> 
+                            <div class="data-card center">
+                                <div class="row list">
+                                    <div class="col-lg-6">
+                                        <h4><%= i %>.  <%= foundPeserta.peserta %></h4>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <h5 class="waktu">Waktu: <%= foundPeserta.waktu[idx] %></h5>
+                                    </div>
+                                </div> 
+                            </div>
+                            <% i = i+1 %>
+                        <% } %>
+
+                    <% }); %>  
+                      
                 <% }); %>
                        
 

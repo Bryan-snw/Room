@@ -57,7 +57,12 @@ A:hover{
 .container-fluid{
     padding: 3% 15%;
     
-  }
+}
+
+.container-fluid-top{
+    padding: 0% 15%;
+    
+}
 
 .dv-card{
     background-color: rgba(245, 245, 245, 0.8);
