@@ -13,7 +13,7 @@
 
                         <div class="mb-3">
                           <label for="exampleFormControlInput1" class="form-label">Tiket</label>
-                          <select class="form-select" name="jenisTiket" id="jenisTiket" aria-label="Default select example">
+                          <select class="form-select" required name="jenisTiket" id="jenisTiket" aria-label="Default select example">
                             <option value="Berbayar">Berbayar</option>
                             <option value="Gratis">Gratis</option>
                           </select>
@@ -21,12 +21,12 @@
 
                         <div class="mb-3">
                           <label for="exampleFormControlInput1" class="form-label">Kuota Tiket</label>
-                          <input type="number" min="1" class="form-control" name="kuotaTiket" id="kuotaTiket">
+                          <input type="number" min="1" required class="form-control" name="kuotaTiket" id="kuotaTiket">
                         </div>
 
                         <div class="mb-3" id="formHarga">
                             <label for="exampleFormControlInput1" class="form-label">Harga Tiket</label>
-                            <input  type="number" min="0" class="form-control" name="hargaTiket" id="hargaTiket" placeholder="50.000">
+                            <input  type="number" min="0" required class="form-control" name="hargaTiket" id="hargaTiket" placeholder="50.000">
                             <h6 class="note" id="note1">
                               *Pihak Room akan mengambil fee IDR 2.000 untuk harga tiket < IDR 50.000. dan fee sebesar 4% untuk harga tiket > IDR 50.000
                             </h6>
@@ -47,7 +47,7 @@
                   
             </div>
             <div class="center" style="text-align: center;">
-                <button class="btn mk-btn-submit" id="kirim" disabled type="submit">Selanjutnya</button>
+                <button class="btn mk-btn-submit" id="kirim" type="submit">Selanjutnya</button>
             </div>
           </form>
         </div>
@@ -84,30 +84,7 @@
       }
 
       $("#hargaTiket").change(fee);
-
-
-
-      $(document).ready(function() {  
-        $('#custNameNext').prop('disabled', true);  
-    
-        function validateNextButton() { 
-            if (document.getElementById("jenisTiket").value === "Berbayar") {
-              var buttonDisabled = $('#hargaTiket').val().trim() === ""
-              || $('#kuotaTiket').val().trim() === "";
-              $('#kirim').prop('disabled', buttonDisabled);
-            } else {
-              var buttonDisabled = $('#kuotaTiket').val().trim() === "";
-              $('#kirim').prop('disabled', buttonDisabled);
-            }
-             
-          } 
-          
-          $("#hargaTiket").click(validateNextButton);
-          $("#kuotaTiket").click(validateNextButton);
-          $("#hargaTiket").keyup(validateNextButton);
-          $("#kuotaTiket").keyup(validateNextButton);
-
-      }); 
+ 
 
     </script>
 

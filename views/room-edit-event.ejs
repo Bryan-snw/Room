@@ -21,12 +21,12 @@
 
                     <div class="mb-3">
                         <label for="exampleFormControlInput1" class="form-label ">Nama Kegiatan</label>
-                        <input type="text" class="form-control" name="namaKegiatan" autofocus id="namaKegiatan" value="<%= rooms[0].room.kegiatan %>">
+                        <input type="text" required class="form-control" name="namaKegiatan" autofocus id="namaKegiatan" value="<%= rooms[0].room.kegiatan %>">
                     </div>
 
                     <div class="mb-3">
                         <label for="exampleFormControlTextarea1" class="form-label">Deskripsi</label>
-                        <textarea class="form-control" name="deskripsi" id="deskripsi" rows="3"><%= rooms[0].room.deskripsi %></textarea>
+                        <textarea class="form-control" required name="deskripsi" id="deskripsi" rows="3"><%= rooms[0].room.deskripsi %></textarea>
                     </div>
 
                     <div class="mb-3">
@@ -40,30 +40,30 @@
 
                     <div class="mb-3">
                       <label for="exampleFormControlInput1" class="form-label">Kota</label>
-                      <input type="text" class="form-control" name="kota" id="kota" value="<%= rooms[0].room.kota %>">
+                      <input type="text" required class="form-control" name="kota" id="kota" value="<%= rooms[0].room.kota %>">
                     </div>
 
                     <div class="mb-3">
                         <label for="exampleFormControlInput1" class="form-label">Lokasi</label>
-                        <input type="text" class="form-control" name="lokasi" id="lokasi" value="<%= rooms[0].room.lokasi %>">
+                        <input type="text" required class="form-control" name="lokasi" id="lokasi" value="<%= rooms[0].room.lokasi %>">
                     </div>
 
                     <div class="mb-3">
                         <label for="exampleFormControlInput1" class="form-label">Tanggal Acara</label>
-                        <input type="date" class="form-control" name="tanggal" id="tanggal" value="<%= rooms[0].room.tanggal %>" >
+                        <input type="date" required class="form-control" name="tanggal" id="tanggal" value="<%= rooms[0].room.tanggal %>" >
                     </div>
 
                     <div class="mb-3">
                       <div class="row">
                         <div class="col-lg-6">
                           <label for="exampleFormControlInput1" class="form-label">Mulai Pukul</label>
-                          <input type="time" class="form-control" name="mulai" id="mulai" value="<%= rooms[0].room.waktuMulai %>" >
+                          <input type="time" required class="form-control" name="mulai" id="mulai" value="<%= rooms[0].room.waktuMulai %>" >
                         </div>
                       
 
                         <div class="col-lg-6">
                           <label for="exampleFormControlInput1" class="form-label">Selesai Pukul</label>
-                          <input type="time" class="form-control" name="selesai" id="selesai" value="<%= rooms[0].room.waktuSelesai %>">
+                          <input type="time" required class="form-control" name="selesai" id="selesai" value="<%= rooms[0].room.waktuSelesai %>">
                         </div>
                       </div>
                     </div>
@@ -78,38 +78,11 @@
             </div>
             
             <div class="center" style="text-align: center;">
-              <button class="btn mk-btn-submit" id="kirim" type="submit" disabled="disabled">Selanjutnya</button>
+              <button class="btn mk-btn-submit" id="kirim" type="submit">Selanjutnya</button>
             </div>
 
         </div>
       </form>
     </div>
-
-    <script>
-
-      $(document).ready(function() {  
-        $('#custNameNext').prop('disabled', true);  
-    
-        function validateNextButton() { 
-            var buttonDisabled = $('#namaKegiatan').val().trim() === '' 
-            || $('#deskripsi').val().trim() === ''
-            || $('#kota').val().trim() === ''
-            || $('#lokasi').val().trim() === ''
-            || $('#tanggal').val() === null
-            || $('#mulai').val() === null
-            || $('#selesai').val() === null;
-            $('#kirim').prop('disabled', buttonDisabled); 
-          } 
-    
-          $('#namaKegiatan').on('keyup', validateNextButton);
-          $('#deskripsi').on('keyup', validateNextButton);
-          $('#kota').on('keyup', validateNextButton);
-          $('#lokasi').on('keyup', validateNextButton);
-          $('#tanggal').on('keyup', validateNextButton);
-          $('#mulai').on('keyup', validateNextButton);
-          $('#selesai').on('keyup', validateNextButton);
-      }); 
-
-    </script>
    
 <%- include('partials/footer') %>

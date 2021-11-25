@@ -60,12 +60,23 @@
             </nav>
 
             <!--Search Bar-->
-            <form action="/cari" method="post">
+            <form name="form1" id="form1" method="post">
               <div class="input-group mb-3">
                   <input type="text" name="cari" id="cari" class="form-control" placeholder="Cari Room" aria-label="Cari Room" aria-describedby="button-addon1">
-                  <button class="btn btn-outline-secondary btn-search" type="submit" id="button-addon1">Cari</button>
+                  <button class="btn btn-outline-secondary btn-search" name="btnCari" id="btnCari">Cari</button>
               </div>
             </form>
+
+            <script type="text/javascript">
+              function cari() {
+                
+                let value = "/cari/"+document.getElementById("cari").value;
+                document.getElementById("form1").action = value;
+                document.form1.submit();
+              };
+
+              $("#btnCari").click(cari);
+            </script>
 
 
         </div>
