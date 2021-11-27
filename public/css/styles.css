@@ -441,6 +441,11 @@ height: auto;
     text-align: center;
 }
 
+.round{
+    border-radius: 10px;
+    margin: 2% 1%;
+}
+
 @media (max-width:991px){
     .img-header-card{
         width: 50%

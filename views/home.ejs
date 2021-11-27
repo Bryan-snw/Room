@@ -1,5 +1,7 @@
 <%- include('partials/header-home') %>
 
+    <h2 hidden id="status" ><%= status[0].langganan %></h2>
+    <h2 hidden id="jumlah" ><%= room %></h2>    
 
     <!--Scan Barcode-->
     <div class="container-fluid">
@@ -36,18 +38,18 @@
                 <div class="col-lg-3 col-md-6">
                     
                     <!-- Modal Toogle -->
-                    <div role="button" class="card room" data-toggle="modal" data-target="#exampleModalCenter">
+                    <div role="button" id="buatroom" class="card room" data-toggle="modal" data-target="#buat">
                         <div class="add-room-card">
                             <i class="fas fa-plus-circle"></i>
                         </div>
-                        <!-- <img src="/Images/logo.png" class=" img-card" alt="Picture"> -->
+                        
                         <div class="card-body">
                             <h5 class="card-title">Buat Room</h5>
                         </div>
                     </div>
                     
                     <!-- Modal -->
-                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal fade" id="buat" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -63,6 +65,23 @@
                                     <a href="room-event">
                                         <button type="button" class="btn btn-outline-primary">Event</button>
                                     </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="batas" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Pemberitahuan</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Sudah Mencapai Limit User Gratis</p>
                                 </div>
                             </div>
                         </div>
@@ -276,5 +295,23 @@
         </div>
 
     </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            let status = document.getElementById("status").textContent;
+            let jumlah = document.getElementById("jumlah").textContent;
+            
+            if (status === "false" && jumlah == 1) {
+                alert("Batas");
+                document.getElementById("buatroom").setAttribute("data-target", "#batas");
+            } else {
+                alert("Masih Aman");
+                document.getElementById("buatroom").setAttribute("data-target", "#buat");
+            }
+            
+        });
+
+
+    </script>
     
 <%- include('partials/footer') %>

@@ -20,6 +20,7 @@ const multer = require("multer");
 const { application } = require('express');
 const qrcode = require("qrcode");
 const converter = require('json-2-csv');
+const e = require('express');
 
 
 // Variables
@@ -71,6 +72,18 @@ const transaksiSchema = new Schema({
 
 const Transaksi = new mongoose.model("Transaksi", transaksiSchema);
 
+// Transaksi Langganan
+const langgananSchema = new Schema({
+    userId: String,
+    statusPembayaran: Array,
+    tanggal: Array,
+    harga: {
+        type: Number,
+        default: 15000
+    }
+});
+
+const Langganan = new mongoose.model("Langganan", langgananSchema);
 
 // ForMyGuest
 const pesertaSchema = new Schema({
@@ -122,6 +135,10 @@ const userSchema = new Schema({
     {
         data: Buffer,
         contentType: String
+    },
+    langganan: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -155,7 +172,7 @@ passport.use(new GoogleStrategy({
 function (accessToken, refreshToken, profile, cb) {  
     console.log(profile);
 
-    User.findOrCreate({username: profile.emails[0].value, nama: profile.displayName, googleId: profile.id, isVerified: profile.emails[0].verified }, function (err, user) {  
+    User.findOrCreate({username: profile.emails[0].value, nama: profile.displayName, googleId: profile.id, isVerified: profile.emails[0].verified}, function (err, user) {  
         return cb(err, user);
     });
 }
@@ -332,25 +349,33 @@ app.get("/home", function(req,res){
 
     if (req.isAuthenticated()) {
 
-        MyRoom.find({userid: req.user.id}, function (err, foundRoom) {  
+        User.find({_id: req.user.id}, function (err, foundUser) {  
             if (err) {
                 console.log(err);
             } else {
-                MyRoom.find({pesertaid: req.user.id, jenis: "Event"}, function (err, foundEvent) {  
+                MyRoom.find({userid: req.user.id}, function (err, foundRoom) {  
                     if (err) {
                         console.log(err);
                     } else {
-                        MyRoom.find({pesertaid: req.user.id, jenis: "Buku Tamu"}, function (err, foundBukuTamu) {  
+                        let jmlroom = foundRoom.length;
+                        MyRoom.find({pesertaid: req.user.id, jenis: "Event"}, function (err, foundEvent) {  
                             if (err) {
                                 console.log(err);
                             } else {
-                                res.render("home", {myroom: foundRoom, event:foundEvent, bukutamu: foundBukuTamu});
+                                MyRoom.find({pesertaid: req.user.id, jenis: "Buku Tamu"}, function (err, foundBukuTamu) {  
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        res.render("home", {status: foundUser, myroom: foundRoom, event:foundEvent, bukutamu: foundBukuTamu, room: jmlroom});
+                                    }
+                                }) 
                             }
-                        }) 
+                        })
                     }
-                })
+                });
             }
         });
+        
         
     } else {
       res.redirect("/masuk");
@@ -2082,6 +2107,89 @@ app.get("/verifikasi/pembayaran/:roomId/:userId", function (req, res) {
 
         }
     });
+});
+
+app.get("/langganan", function (req, res) {  
+    
+    User.find({_id: req.user.id}, function (err, foundUser) {  
+        if (err) {
+            console.log(err);
+        } else if (foundUser) {
+            res.render("langganan", {user: foundUser});
+        }
+    });
+      
+});
+
+app.get("/berlangganan/:userId", function (req,res) {  
+
+    let today = new Date();
+    let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+
+    let tanggalLangganan = [];
+    let statLangganan = [];
+
+    Langganan.find({userId: req.user.id}, function (err, foundLangganan) {  
+        if (err) {
+            console.log(err);
+        } else if (foundLangganan.length > 0) {
+
+            foundLangganan[0].tanggal.forEach(function (tgl) {  
+                tanggalLangganan.push(tgl);
+            });
+
+            foundLangganan[0].statusPembayaran.forEach(function (stat) {  
+                statLangganan.push(stat);
+            });
+
+            tanggalLangganan.push(date);
+            statLangganan.push("Belum Lunas");
+
+            Langganan.updateOne(
+                {userId: req.user.id},
+                {
+                    statusPembayaran: statLangganan, 
+                    tanggal: tanggalLangganan
+                },
+                function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+
+                    statLangganan = [];
+                    tanggalLangganan = [];
+                    console.log("Update room Succes");
+                    res.redirect("/home");
+                }
+            });
+  
+        } else {
+
+            tanggalLangganan.push(date);
+            statLangganan.push("Belum Lunas");
+
+            const newLangganan = new Langganan({
+
+                userId: req.user.id,
+                statusPembayaran: statLangganan,
+                tanggal: tanggalLangganan
+                
+            });
+        
+            newLangganan.save(function (err) {  
+                if (err) {
+                    console.log(err);
+                } else {
+                    statLangganan = [];
+                    tanggalLangganan = [];
+                    console.log("Transaksi add Succesfully");
+                    res.redirect("/home");
+                }
+            });        
+
+        }
+    });
+
 });
 
 app.listen(3000, function() {  
