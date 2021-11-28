@@ -61,6 +61,7 @@ A:hover{
 
 .container-fluid-top{
     padding: 0% 15%;
+    padding-bottom: 3%;
     
 }
 
@@ -433,7 +434,7 @@ height: auto;
     margin: 5px;
 }
 
-.bank-text{
+.ver-text{
     margin: 5% auto;
 }
 

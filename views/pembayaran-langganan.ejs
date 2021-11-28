@@ -1,15 +1,15 @@
 <%- include('partials/header') %>
-
-    <div class="container-fluid" >
+<h1 hidden id="status"><%= langganan[0].statusPembayaran %></h1>
+    <div class="container-fluid-top">
         <div class="card room">
             <div class="row">
                 
                 <div class="col-lg-6 justify-content-left">
-                    <h4>Total Tagihan</h4>
+                    <h4>Total Tagihan Langganan</h4>
                 </div>
 
                 <div class="col-lg-6">
-                    <h5 class="show-all">IDR <%= transaksi[0].hargaTicket %>   </h5>
+                    <h5 class="show-all">IDR <%= langganan[0].harga %> </h5>
                 </div>
 
             </div>
@@ -42,7 +42,7 @@
 
                 <p class="small-text">Atau</p>
                 
-                <a class="btn btn-outline-primary btn-pembayaran" role="button" class="card room" data-toggle="modal" data-target="#ModalKonfirmasi">Klik Jika Anda Sudah Membayar</a>
+                <a class="btn btn-pembayaran" id="klik" role="button" class="card room" data-toggle="modal" data-target="#ModalKonfirmasi">Klik Jika Anda Sudah Membayar</a>
             </div>
             
         </div>
@@ -57,7 +57,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form id="submit_form" action="/konfirmasi/transaksi/<%= transaksi[0].roomId %>/<%= transaksi[0].userId %>" method="post">
+                    <form id="submit_form" action="/konfirmasi/langganan/<%= langganan[0]._id %>/<%= langganan[0].userId %>" method="post">
                       <div class="modal-body">
                         <label for="exampleFormControlInput1" class="form-label">Nama Pengirim</label>
                         <input required type="text" name="namaPengirim" class="form-control" id="exampleFormControlInput1" placeholder="John">
@@ -76,9 +76,28 @@
     </div>
 
     <script type="text/javascript">
+        
+        window.addEventListener('load', function () {
+            let status = document.getElementById("status").textContent;
+            
+            if (status == "Lunas") {
+                alert("Lunas");
+                document.getElementById("klik").setAttribute("data-target", "");
+                document.getElementById("klik").textContent = "Anda Sudah Membayar";
+                document.getElementById("klik").classList.add("btn-secondary");
+            } else {
+                alert("Kedua");
+                document.getElementById("klik").classList.add("btn-outline-primary");
+            }
+            
+        });
+        
         function form_submit() {
           document.getElementById("submit_form").submit();
-         }    
+         }   
+         
+         
+
     </script>
 
 <%- include('partials/footer') %>

@@ -1,10 +1,12 @@
 <%- include('partials/header') %>
 
+<input type="text" hidden name="status" id="status" value="<%= user[0].langganan %>">
+<input type="text" hidden name="proses" id="proses" value="<%= user[0].proses %>">
+
     <div class="container-fluid-top">
         <h1>Paket Langganan</h1>
     </div>
     <div class="container-fluid-top">
-        <input type="text" hidden name="status" id="status" value="<%= user[0].langganan %>">
         <div class="row">
 
             <div class="col-lg-6">
@@ -48,14 +50,29 @@
             
             if (document.getElementById("status").value === "false") {
                 
-                document.getElementById("langganan").textContent = "Berlangganan";
-                document.getElementById("gratis").textContent = "Paket Saat Ini";
+                if (document.getElementById("proses").value == "Proses") {
+                    
+                    document.getElementById("langganan").textContent = "Masih Di Proses";
+                    document.getElementById("gratis").textContent = "Gratis";
 
-                document.getElementById("langganan").href ="/berlangganan/<%= user[0]._id %>";
+                    document.getElementById("langganan").href ="";
 
-                document.getElementById("langganan").classList.add("btn-primary");
-                document.getElementById("gratis").classList.add("btn-secondary");
-                
+                    
+                    document.getElementById("langganan").classList.add("btn-secondary");
+                    document.getElementById("gratis").classList.add("btn-primary");
+
+
+                } else {
+
+                    document.getElementById("langganan").textContent = "Berlangganan";
+                    document.getElementById("gratis").textContent = "Paket Saat Ini";
+
+                    document.getElementById("langganan").href ="/berlangganan/<%= user[0]._id %>";
+
+                    document.getElementById("langganan").classList.add("btn-primary");
+                    document.getElementById("gratis").classList.add("btn-secondary");
+                            
+                }
                 
             } else if (document.getElementById("status").value === "true") {
                 

@@ -21,6 +21,7 @@ const { application } = require('express');
 const qrcode = require("qrcode");
 const converter = require('json-2-csv');
 const e = require('express');
+const moment = require("moment");
 
 
 // Variables
@@ -77,6 +78,7 @@ const langgananSchema = new Schema({
     userId: String,
     statusPembayaran: Array,
     tanggal: Array,
+    expired: Array,
     harga: {
         type: Number,
         default: 15000
@@ -139,6 +141,10 @@ const userSchema = new Schema({
     langganan: {
         type: Boolean,
         default: false
+    },
+    proses: {
+        type: String,
+        default: ""
     }
 });
 
@@ -193,6 +199,13 @@ let upload = multer({storage: storage});
 
 // Route
 app.get("/", function(req,res){
+    
+    var currentDate = moment().format('DD-MM-YYYY');
+    var futureMonth = moment().add(1, 'M').format('DD-MM-YYYY');
+
+    console.log(currentDate) //  Will result --> 31/10/2015
+    console.log(futureMonth) //  Will result --> 30/11/2015 
+    
     res.render("landingpage");
 });
 
@@ -1992,9 +2005,13 @@ app.get("/transaksi", function (req,res) {
         if (err) {
             console.log(err);
         } else if (foundTransaksi) {
-            
-            res.render("transaksi", {transaksi: foundTransaksi});
-            
+            Langganan.find({userId: req.user.id}, function (err, foundLangganan) {  
+                if (err) {
+                    console.log(err);
+                } else if (foundLangganan) {
+                    res.render("transaksi", {transaksi: foundTransaksi, langganan: foundLangganan});
+                }
+            })      
         }
     });
     
@@ -2126,66 +2143,246 @@ app.get("/berlangganan/:userId", function (req,res) {
     let today = new Date();
     let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
 
-    let tanggalLangganan = [];
-    let statLangganan = [];
+    var currentDate = moment().format('DD-MM-YYYY');
+    var expiredDate = moment().add(1, 'M').format('DD-MM-YYYY');
 
-    Langganan.find({userId: req.user.id}, function (err, foundLangganan) {  
+    console.log(currentDate) //  Will result --> 31/10/2015
+    console.log(expiredDate) //  Will result --> 30/11/2015 
+
+    let tanggalLangganan = [];
+    let tanggalExpired = [];
+    let statLangganan = [];
+    
+    User.updateOne(
+        {_id: req.params.userId},
+        {
+            proses: "Proses"
+        },
+        function (err) {  
         if (err) {
             console.log(err);
-        } else if (foundLangganan.length > 0) {
+        } else {
+            console.log("update profile berhasil");
+        }
+    });
 
-            foundLangganan[0].tanggal.forEach(function (tgl) {  
-                tanggalLangganan.push(tgl);
-            });
+    tanggalLangganan.push(currentDate);
+    tanggalExpired.push(expiredDate);
+    statLangganan.push("Belum Lunas");
 
-            foundLangganan[0].statusPembayaran.forEach(function (stat) {  
-                statLangganan.push(stat);
-            });
+    const newLangganan = new Langganan({
 
-            tanggalLangganan.push(date);
-            statLangganan.push("Belum Lunas");
+        userId: req.user.id,
+        statusPembayaran: statLangganan,
+        tanggal: tanggalLangganan,
+        expired: tanggalExpired
+        
+    });
 
-            Langganan.updateOne(
-                {userId: req.user.id},
+    newLangganan.save(function (err) {  
+        if (err) {
+            console.log(err);
+        } else {
+            statLangganan = [];
+            tanggalLangganan = [];
+            tanggalExpired = [];
+            console.log("Transaksi add Succesfully");
+            res.redirect("/pembayaran-langganan/"+req.user.id);
+        }
+    });       
+
+    // Langganan.find({userId: req.user.id}, function (err, foundLangganan) {  
+    //     if (err) {
+    //         console.log(err);
+    //     } else if (foundLangganan.length > 0) {
+
+    //         foundLangganan[0].tanggal.forEach(function (tgl) {  
+    //             tanggalLangganan.push(tgl);
+    //         });
+
+    //         foundLangganan[0].expired.forEach(function (tglex) {  
+    //             tanggalExpired.push(tglex);
+    //         });
+
+    //         foundLangganan[0].statusPembayaran.forEach(function (stat) {  
+    //             statLangganan.push(stat);
+    //         });
+
+    //         tanggalLangganan.push(currentDate);
+    //         tanggalExpired.push(expiredDate);
+    //         statLangganan.push("Belum Lunas");
+
+    //         Langganan.updateOne(
+    //             {userId: req.user.id},
+    //             {
+    //                 statusPembayaran: statLangganan, 
+    //                 tanggal: tanggalLangganan,
+    //                 expired: tanggalExpired
+    //             },
+    //             function (err) {  
+    //             if (err) {
+    //                 console.log(err);
+    //             } else {
+
+    //                 statLangganan = [];
+    //                 tanggalLangganan = [];
+    //                 tanggalExpired = [];
+    //                 console.log("Update room Succes");
+    //                 res.redirect("/pembayaran-langganan/"+req.user.id);
+    //             }
+    //         });
+  
+    //     } else {
+
+    //         tanggalLangganan.push(currentDate);
+    //         tanggalExpired.push(expiredDate);
+    //         statLangganan.push("Belum Lunas");
+
+    //         const newLangganan = new Langganan({
+
+    //             userId: req.user.id,
+    //             statusPembayaran: statLangganan,
+    //             tanggal: tanggalLangganan,
+    //             expired: tanggalExpired
+                
+    //         });
+        
+    //         newLangganan.save(function (err) {  
+    //             if (err) {
+    //                 console.log(err);
+    //             } else {
+    //                 statLangganan = [];
+    //                 tanggalLangganan = [];
+    //                 tanggalExpired = [];
+    //                 console.log("Transaksi add Succesfully");
+    //                 res.redirect("/pembayaran-langganan/"+req.user.id);
+    //             }
+    //         });        
+
+    //     }
+    // });
+
+});
+
+app.get("/pembayaran-langganan/:userId", function (req,res) {  
+    Langganan.find({userId: req.params.userId}, function (err, found) {  
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("Pembayaran-langganan", {langganan: found});
+        }
+    });
+});
+
+app.post("/konfirmasi/langganan/:langgananId/:userId", function (req,res) {  
+
+    // const token_jwt = jwt.sign({data: req.params.roomId}, req.params.userId);
+
+    const transporter = nodemailer.createTransport({
+        service:"gmail",
+        auth:{
+            user: process.env.EMAIL,
+            pass: process.env.PASS,
+        },
+        tls: {
+            rejectUnauthorized:false,
+        }
+    });
+
+    const mailOptions = {
+        from: process.env.EMAIL,
+        to: process.env.EMAIL1,
+        subject: "Verifikasi Pembayaran Langganan "+req.body.namaPengirim,
+        html: `<h1>Verifikasi Pembayaran Berlangganan</h1>
+            <h2>Silahkan Lakukan Pengecekkan Pembayaran oleh User dengan ID: ${req.params.userId}</h2>
+            <h3>Atas Nama: ${req.body.namaPengirim}</h3>
+            <h3>Bank: ${req.body.namaBank}</h3>
+            <h3>Jika Pembayaran Sudah Di Konfirmasi Silahkan Klik Link Tautan Dibawah</h3>
+            <a href=http://localhost:3000/verifikasi/${req.params.langgananId}/${req.params.userId}>
+            Klik disini</a>
+            </div>`,
+    };
+
+    transporter.sendMail(mailOptions, function (err, success) {  
+        if (err){
+            console.log(err);
+        } else {
+            res.redirect("/home");
+            console.log("Check Your email for verification");
+        }
+    });
+
+});
+
+app.get("/verifikasi/:langgananId/:userId", function (req, res) {  
+    
+
+    // res.redirect("/home");
+    User.find({_id: req.params.userId}, function (err, foundUser) {  
+        if (err) {
+            console.log(err);
+        } else {
+            User.updateOne(
+                {_id: req.params.userId},
                 {
-                    statusPembayaran: statLangganan, 
-                    tanggal: tanggalLangganan
+                langganan: true,
+                proses: ""
                 },
                 function (err) {  
                 if (err) {
                     console.log(err);
                 } else {
+                    console.log("Update status langganan Succes");
 
-                    statLangganan = [];
-                    tanggalLangganan = [];
-                    console.log("Update room Succes");
-                    res.redirect("/home");
+                    var currentDate = moment().format('DD-MM-YYYY');
+                    var expiredDate = moment().add(1, 'M').format('DD-MM-YYYY');
+
+                    let tanggalLangganan = [];
+                    let tanggalExpired = [];
+                    let statLangganan = [];
+
+                    Langganan.find({_id: req.params.langgananId}, function (err, found) {  
+                        if (err) {
+                            console.log(err);
+                        } else {
+
+                            found[0].tanggal.forEach(function (tgl) {  
+                                tanggalLangganan.push(tgl);
+                            });
+                        
+                            found[0].expired.forEach(function (tglex) {  
+                                tanggalExpired.push(tglex);
+                            });
+                        
+                            found[0].statusPembayaran.forEach(function (stat) {  
+                                statLangganan.push(stat);
+                            });
+                        
+                            tanggalLangganan[tanggalLangganan.length-1] = currentDate;
+                            tanggalExpired[tanggalExpired.length-1] = expiredDate;
+                            statLangganan[statLangganan.length-1] = "Lunas";
+                        
+                            Langganan.updateOne(
+                                {_id: req.params.langgananId},
+                                {
+                                statusPembayaran: statLangganan,
+                                tanggal: tanggalLangganan,
+                                expired: tanggalExpired
+                                },
+                                function (err) {  
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log("Update status langganan Succes");
+                                    res.redirect("/home");
+                                }
+                            });
+                        
+                        }
+                    });
+
                 }
             });
-  
-        } else {
-
-            tanggalLangganan.push(date);
-            statLangganan.push("Belum Lunas");
-
-            const newLangganan = new Langganan({
-
-                userId: req.user.id,
-                statusPembayaran: statLangganan,
-                tanggal: tanggalLangganan
-                
-            });
-        
-            newLangganan.save(function (err) {  
-                if (err) {
-                    console.log(err);
-                } else {
-                    statLangganan = [];
-                    tanggalLangganan = [];
-                    console.log("Transaksi add Succesfully");
-                    res.redirect("/home");
-                }
-            });        
 
         }
     });
