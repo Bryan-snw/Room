@@ -2,7 +2,7 @@
 
 <div class="container-fluid-top">
   <div class="form-card-info">
-    <h3>Tunjukan Barcode Untuk di Scan</h3>
+    <h3>Tunjukan Barcode Room Untuk di Scan</h3>
   </div>
 
   <form name="form1" id="form1" method="post"> 
@@ -22,11 +22,16 @@
     scanner.addListener('scan', function (content) {
       console.log("Scanned");
       document.getElementById('hasil').value = content;
-      let Varform = content;
-      document.getElementById("form1").action = Varform;
+      if (content.includes("/cari/")) {
+        let Varform = content;
+        document.getElementById("form1").action = Varform;
       
-      alert("Anda Akan dialihkan ke halaman pencarian");
-      document.form1.submit();
+        alert("Anda Akan dialihkan ke halaman pencarian");
+        document.form1.submit();
+      } else {
+        alert("Salah Format")
+      }
+      
   
     });
 

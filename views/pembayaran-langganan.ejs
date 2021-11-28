@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<h1 hidden id="status"><%= langganan[0].statusPembayaran %></h1>
+<h1 hidden id="status"><%= langganan.statusPembayaran %></h1>
     <div class="container-fluid-top">
         <div class="card room">
             <div class="row">
@@ -9,7 +9,7 @@
                 </div>
 
                 <div class="col-lg-6">
-                    <h5 class="show-all">IDR <%= langganan[0].harga %> </h5>
+                    <h5 class="show-all">IDR <%= langganan.harga %> </h5>
                 </div>
 
             </div>
@@ -57,7 +57,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form id="submit_form" action="/konfirmasi/langganan/<%= langganan[0]._id %>/<%= langganan[0].userId %>" method="post">
+                    <form id="submit_form" action="/konfirmasi/langganan/<%= langganan._id %>/<%= langganan.userId %>" method="post">
                       <div class="modal-body">
                         <label for="exampleFormControlInput1" class="form-label">Nama Pengirim</label>
                         <input required type="text" name="namaPengirim" class="form-control" id="exampleFormControlInput1" placeholder="John">
