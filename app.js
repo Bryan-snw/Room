@@ -54,7 +54,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Database
+// DATABASE
 const mongoDB = process.env.DATABASE;
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 
@@ -198,13 +198,7 @@ let upload = multer({storage: storage});
 
 
 // Route
-app.get("/", function(req,res){
-    
-    let currentDate = moment().format('DD-MM-YYYY');
-    let futureMonth = moment().add(1, 'M').format('DD-MM-YYYY');
-
-    console.log(currentDate) //  Will result --> 31/10/2015
-    console.log(futureMonth) //  Will result --> 30/11/2015 
+app.get("/", function(req,res,next){
     
     res.render("landingpage");
 });
@@ -239,6 +233,7 @@ app.post("/masuk",function (req, res) {
     User.findOne({username: req.body.username}, function (err, foundUser) {  
         if (err) {
             console.log(err);
+            res.render("error1");
         } else if (!foundUser) {
             console.log("AKun tidak ditemukan!");
             res.redirect("/daftar");
@@ -256,6 +251,7 @@ app.post("/masuk",function (req, res) {
                 req.login(user, function (err) {  
                     if (err) {
                        console.log(err);
+                       res.render("error1");
                     } else { 
                         passport.authenticate("local")(req, res, function () {
                             res.redirect("/home");
@@ -307,6 +303,7 @@ app.post("/daftar", function (req,res) {
                 transporter.sendMail(mailOptions, function (err, success) {  
                     if (err){
                         console.log(err);
+                        res.render("error1");
                     } else {
                         res.redirect("/verifikasi");
                         console.log("Check Your email for verification");
@@ -329,6 +326,7 @@ app.get("/verifikasi/:token", function(req, res){
     User.findOne({token: userToken}, function (err, foundUser) {
       if (err) {
         console.log(err);
+        res.render("error1");
       } else {
         User.updateOne(
             {token: userToken},
@@ -339,6 +337,7 @@ app.get("/verifikasi/:token", function(req, res){
                     res.redirect("/masuk");
                 } else {
                     console.log(err);
+                    res.render("error1");
                 }
             }
         );
@@ -359,12 +358,14 @@ app.get("/home", function(req,res){
     hadirArr = [];
     edit = false;
     list = [];
+    tanggal = "";
 
     if (req.isAuthenticated()) {
 
         Langganan.find({userId: req.user.id}, function (err, foundLangganan) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundLangganan.length > 0) {
                 let currentDate = moment().format('DD-MM-YYYY');
 
@@ -379,6 +380,7 @@ app.get("/home", function(req,res){
                         function (err) {  
                         if (err) {
                             console.log(err);
+                            res.render("error1");
                         } else {
                             console.log("Update status langganan Succes");
                         }
@@ -391,19 +393,23 @@ app.get("/home", function(req,res){
         User.find({_id: req.user.id}, function (err, foundUser) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 MyRoom.find({userid: req.user.id}, function (err, foundRoom) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else {
                         let jmlroom = foundRoom.length;
                         MyRoom.find({pesertaid: req.user.id, jenis: "Event"}, function (err, foundEvent) {  
                             if (err) {
                                 console.log(err);
+                                res.render("error1");
                             } else {
                                 MyRoom.find({pesertaid: req.user.id, jenis: "Buku Tamu"}, function (err, foundBukuTamu) {  
                                     if (err) {
                                         console.log(err);
+                                        res.render("error1");
                                     } else {
                                         res.render("home", {status: foundUser, myroom: foundRoom, event:foundEvent, bukutamu: foundBukuTamu, room: jmlroom});
                                     }
@@ -428,6 +434,7 @@ app.get("/profil", function(req,res){
         User.find({_id: req.user.id}, function (err, foundUser) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 let userName = _.startCase(foundUser[0].nama)
                 console.log(userName);
@@ -447,6 +454,7 @@ app.get("/akun", function (req,res) {
         User.find({_id: req.user.id}, function (err, foundUser) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 res.render("akun", {user: foundUser});
             }
@@ -464,6 +472,7 @@ app.post("/akun", function (req,res) {
             function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 console.log("Update Succes");
     
@@ -486,6 +495,7 @@ app.get("/tampilsemua/:room", function(req,res){
             MyRoom.find({userid: req.user.id}, function (err, foundRoom) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     res.render("tampilsemua-room", {myroom: foundRoom, kategori: room});
                 }
@@ -494,6 +504,7 @@ app.get("/tampilsemua/:room", function(req,res){
             MyRoom.find({pesertaid: req.user.id, jenis: room} , function (err, foundRoom) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     res.render("tampilsemua", {myroom: foundRoom, kategori: room});
                 }
@@ -617,6 +628,7 @@ app.post("/form-bukutamu", upload.single("image"), (req,res) => {
         newRoom.save(function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 console.log("room add Succesfully");
             }
@@ -641,6 +653,7 @@ app.get("/room/edit/:roomId", function (req,res) {
         MyRoom.find({_id: requestedRoomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
 
                 if (foundRoom[0].jenis === "Buku Tamu") {
@@ -708,6 +721,7 @@ app.get("/form-edit-bukutamu", function(req,res){
                 MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else {
                         if (foundRoom) {
         
@@ -733,6 +747,7 @@ app.get("/form-edit-bukutamu", function(req,res){
                 MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundRoom) {
                         res.render("form-edit-bukutamu", {ListForm: listForm, rooms: foundRoom});
                     }
@@ -768,6 +783,7 @@ app.post("/form-edit-bukutamu", upload.single("image"), (req,res) => {
                 function (err) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     console.log("Update Succes");
         
@@ -790,6 +806,7 @@ app.post("/form-edit-bukutamu", upload.single("image"), (req,res) => {
                 function (err) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     console.log("Update Succes");
         
@@ -835,6 +852,7 @@ app.get("/room/buka/:roomId", function (req,res) {
         MyRoom.find({_id: requestedRoomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
 
                 if (foundRoom[0].jenis === "Buku Tamu") {
@@ -993,6 +1011,7 @@ app.post("/form-event", upload.single("image"), (req, res) => {
         newRoom.save(function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 console.log("room add Succesfully");
             }
@@ -1072,6 +1091,7 @@ app.get("/ticket-edit-event", function (req, res) {
             MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     if (foundRoom) {
     
@@ -1150,6 +1170,7 @@ app.get("/form-edit-event", function(req,res){
                 MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else {
                         if (foundRoom) {
         
@@ -1175,6 +1196,7 @@ app.get("/form-edit-event", function(req,res){
                 MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundRoom) {
                         res.render("form-edit-event", {ListForm: listForm, rooms: foundRoom});
                     }
@@ -1211,6 +1233,7 @@ app.post("/form-edit-event", upload.single("image"), (req,res) =>{
                 function (err) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     console.log("Update Succes");
         
@@ -1235,6 +1258,7 @@ app.post("/form-edit-event", upload.single("image"), (req,res) =>{
                 function (err) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     console.log("Update Succes");
         
@@ -1286,6 +1310,7 @@ app.get("/room/hapus/:roomId", function (req, res) {
             res.redirect("/home");
             } else {
             res.send(err);
+            res.render("error1");
             }
         });
     }else {
@@ -1301,6 +1326,7 @@ app.post("/cari/:roomId", function (req,res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 console.log(foundRoom[0].userid);
                 console.log(req.user.id);
@@ -1350,6 +1376,7 @@ app.get("/daftar/room-info/:roomId", function(req,res){
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
     
                 if (foundRoom[0].jenis === "Buku Tamu") {
@@ -1375,6 +1402,7 @@ app.post("/daftar/room-info/:roomId", function (req,res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 if (foundRoom[0].jenis === "Buku Tamu") {
                     res.render("peserta-form-room-bukutamu", {rooms: foundRoom});
@@ -1401,6 +1429,7 @@ app.post("/daftar/room-ticket/:roomId", function (req,res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 res.render("peserta-form-room-event", {rooms: foundRoom});
             } else {
@@ -1422,6 +1451,7 @@ app.post("/peserta/form/room/event/:roomId", function (req, res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
     
                 if (foundRoom[0].ticket.jenisTicket === "Gratis") {
@@ -1459,48 +1489,57 @@ app.post("/peserta/form/room/event/:roomId", function (req, res) {
                         function (err) {  
                         if (err) {
                             console.log(err);
+                            res.render("error1");
                         } else {
+
                             console.log("Update Room Succes");
-                        }
-                    });
-    
-                    const newTransaksi = new Transaksi({
-                        roomId: req.params.roomId,
-                        userId: req.user.id,
-                        namaKegiatan: foundRoom[0].room.kegiatan,
-                        statusPembayaran: "Lunas",
-                        hargaTicket: foundRoom[0].ticket.hargaTicket,
-                        feeTicket: foundRoom[0].ticket.feeTicket,
-    
-                    });
-    
-                    newTransaksi.save(function (err) {  
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            console.log("Transaksi add Succesfully");
-                        }
-                    });
-    
-    
-                    const newPeserta = new Peserta({
-                        roomId: req.params.roomId,
-                        userId: req.user.id,
-                        peserta: formPeserta
-                    });
-                    
-                    newPeserta.save(function (err) {  
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            console.log("Peserta add Succesfully");
-                        }
-                    });
+
+                            const newTransaksi = new Transaksi({
+                                roomId: req.params.roomId,
+                                userId: req.user.id,
+                                namaKegiatan: foundRoom[0].room.kegiatan,
+                                statusPembayaran: "Lunas",
+                                hargaTicket: foundRoom[0].ticket.hargaTicket,
+                                feeTicket: foundRoom[0].ticket.feeTicket,
+            
+                            });
+            
+                            newTransaksi.save(function (err) {  
+                                if (err) {
+                                    console.log(err);
+                                    res.render("error1");
+                                } else {
+                                    
+                                    console.log("Transaksi add Succesfully");
+        
+                                    const newPeserta = new Peserta({
+                                        roomId: req.params.roomId,
+                                        userId: req.user.id,
+                                        peserta: formPeserta
+                                    });
+                                    
+                                    newPeserta.save(function (err) {  
+                                        
+                                        if (err) {
+                                            console.log(err);
+                                            res.render("error1");
+                                        } else {
+                                            console.log("Peserta add Succesfully");
                 
-                    formPeserta=[];
-                    pesertaId=[];
+                                            formPeserta=[];
+                                            pesertaId=[];
+                                        
+                                            res.redirect("/home");  
+                                        }
                 
-                    res.redirect("/home");
+                                    });
+        
+                                }
+        
+                            });
+
+                        }
+                    });  
     
                 } else {
     
@@ -1525,30 +1564,34 @@ app.post("/peserta/form/room/event/:roomId", function (req, res) {
                     });
     
                     newTransaksi.save(function (err) {  
+                        
                         if (err) {
                             console.log(err);
+                            res.render("error1");
                         } else {
                             console.log("Transaksi add Succesfully");
+
+                            const newPeserta = new Peserta({
+                                roomId: req.params.roomId,
+                                userId: req.user.id,
+                                peserta: formPeserta
+                            });
+                            
+                            newPeserta.save(function (err) {  
+                                if (err) {
+                                    console.log(err);
+                                    res.render("error1");
+                                } else {
+                                    console.log("Peserta add Succesfully");
+                                    formPeserta=[];
+                                    pesertaId=[];
+                        
+                                    res.redirect("/pembayaran/"+req.params.roomId+"/"+req.user.id);
+                                }
+                            });
                         }
-                    });
-    
-                    const newPeserta = new Peserta({
-                        roomId: req.params.roomId,
-                        userId: req.user.id,
-                        peserta: formPeserta
-                    });
-                    
-                    newPeserta.save(function (err) {  
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            console.log("Peserta add Succesfully");
-                            formPeserta=[];
-                            pesertaId=[];
-                
-                            res.redirect("/pembayaran/"+req.params.roomId+"/"+req.user.id);
-                        }
-                    });
+
+                    });    
                 
                 }
                 
@@ -1569,11 +1612,13 @@ app.get("/room/edit/peserta/e/:roomId", function (req,res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 
                 Peserta.find({roomId: req.params.roomId, userId: req.user.id }, function (err, foundData) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundData) {
                         console.log(foundData[0].peserta);
                         res.render("peserta-form-room-edit-event", {rooms: foundRoom, data: foundData});
@@ -1613,6 +1658,7 @@ app.post("/peserta/edit/event/:roomId", function (req, res) {
             function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 console.log("Update Succes");
 
@@ -1637,10 +1683,12 @@ app.post("/peserta-form-room-buka-event", function (req, res) {
         MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 Peserta.find({roomId: infoRoom.roomId, userId: req.user.id }, function (err, foundData) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundData) {
                         console.log(foundData[0].peserta);
                         res.render("peserta-form-room-buka-event", {rooms: foundRoom, data: foundData});
@@ -1666,6 +1714,7 @@ app.post("/peserta-form-room-bukutamu/:roomId", function (req, res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
     
                 console.log(foundRoom[0].pesertaid);
@@ -1701,30 +1750,36 @@ app.post("/peserta-form-room-bukutamu/:roomId", function (req, res) {
                     function (err) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else {
+                        
                         console.log("Update Room Succes");
+
+                        const newPeserta = new Peserta({
+                            roomId: req.params.roomId,
+                            userId: req.user.id,
+                            peserta: formPeserta
+                        });
+                        
+                        newPeserta.save(function (err) {  
+                            if (err) {
+                                console.log(err);
+                                res.render("error1");
+                            } else {
+                                
+                                console.log("Peserta add Succesfully");
+        
+                                formPeserta=[];
+                                pesertaId=[];
+                            
+                                res.redirect("/home");
+        
+                            }
+                        });
+
                     }
                 });
     
-    
-                const newPeserta = new Peserta({
-                    roomId: req.params.roomId,
-                    userId: req.user.id,
-                    peserta: formPeserta
-                });
-                
-                newPeserta.save(function (err) {  
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log("Peserta add Succesfully");
-                    }
-                });
-            
-                formPeserta=[];
-                pesertaId=[];
-            
-                res.redirect("/home");
             }
         });
 
@@ -1742,6 +1797,7 @@ app.get("/room/buka/peserta/:roomId", function (req,res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
     
                 if (foundRoom.jenis = "Buku Tamu") {
@@ -1768,10 +1824,12 @@ app.post("/peserta-form-room-buka-bukutamu", function (req, res) {
         MyRoom.find({_id: req.body.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 Peserta.find({roomId: req.body.roomId, userId: req.user.id }, function (err, foundData) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundData) {
                         console.log(foundData[0].peserta);
                         res.render("peserta-form-room-buka-bukutamu", {rooms: foundRoom, data: foundData});
@@ -1801,10 +1859,12 @@ app.get("/room/edit/peserta/:roomId", function (req,res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 Peserta.find({roomId: req.params.roomId, userId: req.user.id }, function (err, foundData) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundData) {
                         console.log(foundData[0].peserta);
                         res.render("peserta-form-room-edit-bukutamu", {rooms: foundRoom, data: foundData});
@@ -1844,6 +1904,7 @@ app.post("/peserta-edit-bukutamu", function (req, res) {
             function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 console.log("Update Succes");
 
@@ -1871,6 +1932,8 @@ app.get("/qrcode/r/:roomId", function (req, res) {
         qrcode.toDataURL(barcode,(err, src)=>{
         if (!err) {
             res.render("lihat-barcode", {qrcode: src});
+        } else {
+            res.render("error1");
         }
     });
 
@@ -1889,6 +1952,8 @@ app.get("/qrcode/p/:roomId", function (req, res) {
         qrcode.toDataURL(barcode,(err, src)=>{
             if (!err) {
                 res.render("lihat-barcode", {qrcode: src});
+            } else {
+                res.render("error1");
             }
         });
 
@@ -1930,18 +1995,20 @@ app.post("/hadir/p/:pesertaId", function (req,res) {
         
         let today = new Date();
         let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
-        // let date = "26-11-2021";
+        // let date = "30-11-2021";
         let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
         Peserta.find({_id: req.params.pesertaId}, function (err, foundPeserta) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundPeserta) {
                 
                 // Tanggal Pertemuan Room
                 MyRoom.find({_id: foundPeserta[0].roomId}, function (err, foundRoom) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundRoom) {
                         
                         foundRoom[0].tanggal.forEach(function (foundTglR) {  
@@ -1964,6 +2031,7 @@ app.post("/hadir/p/:pesertaId", function (req,res) {
                                 function (err) {  
                                 if (err) {
                                     console.log(err);
+                                    res.render("error1");
                                 } else {
                                     console.log("Update room Succes");
                                 }
@@ -2019,6 +2087,7 @@ app.post("/hadir/p/:pesertaId", function (req,res) {
                         function (err) {  
                         if (err) {
                             console.log(err);
+                            res.render("error1");
                         } else {
                             console.log("Update peserta Succes");
                 
@@ -2051,10 +2120,12 @@ app.get("/list/bukutamu/:index/:roomId", function(req,res){
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundPeserta) {
                         res.render("list-bukutamu", {rooms: foundRoom, peserta: foundPeserta, index: req.params.index});
                     }
@@ -2075,6 +2146,7 @@ app.get("/pertemuan/:roomId", function (req, res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
     
                 res.render("pertemuan", {rooms: foundRoom});    
@@ -2094,10 +2166,12 @@ app.get("/pendaftar/:roomId", function (req, res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
                 Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundPeserta) {
                         res.render("list-pendaftar", {rooms: foundRoom, peserta: foundPeserta});
                     }
@@ -2118,6 +2192,7 @@ app.post("/download/:index/:roomId", function (req,res) {
         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundRoom) {
     
                 console.log(foundRoom[0].tanggal[req.params.index]);
@@ -2127,6 +2202,7 @@ app.post("/download/:index/:roomId", function (req,res) {
                 Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundPeserta) {
                         
                         foundPeserta.forEach(function (pesertas) {
@@ -2157,6 +2233,7 @@ app.post("/download/:index/:roomId", function (req,res) {
                         converter.json2csv(list, (err, csv) => {
                             if (err) {
                                 console.log(err);
+                                res.render("error1");
                             }
     
                             console.log(csv);
@@ -2184,10 +2261,114 @@ app.get("/download", function (req,res) {
         res.download("list-bukutamu-"+tanggal+".csv", function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 fs.unlink("list-bukutamu-"+tanggal+".csv", function (err) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
+                    } else {
+                        console.log("File Terdownload & DIhapus");
+                        list = [];
+                        tanggal = "";
+                    }
+                });
+            }
+        });
+
+    }else {
+        res.redirect("/masuk");
+    }
+    
+});
+
+app.post("/download/a/room/:roomId", function (req, res) {  
+
+    if (req.isAuthenticated()) {
+        
+        MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
+            if (err) {
+                console.log(err);
+                res.render("error1");
+            } else if (foundRoom) {
+    
+                Peserta.find({roomId: req.params.roomId}, function (err, foundPeserta) {  
+                    if (err) {
+                        console.log(err);
+                        res.render("error1");
+                    } else if (foundPeserta) {
+                        
+                        console.log("Tangaal Room: "+foundRoom[0].tanggal);
+
+                        foundRoom[0].tanggal.forEach(function (tgl) {  
+
+                            console.log("Contoh "+foundPeserta[0].hadir[0][tgl]);
+
+                            foundPeserta.forEach(function (peserta) {  
+                                
+                                peserta.hadir.forEach(function (hadir) {  
+
+                                    if (hadir[tgl] == "True") {
+                                        
+                                        console.log(hadir[tgl]);
+                                        let i = 0;
+                                        let forms = {};
+                                        forms["Tanggal"] = tgl;
+                                        foundRoom[0].form.forEach(function (form) {  
+    
+                                            console.log(form+": "+peserta.peserta[i]);
+                                            forms[form] = peserta.peserta[i];
+                                            i = i + 1;
+    
+                                        });
+                                        console.log(forms);
+                                        list.push(forms);
+                                        console.log(list);
+                                    }      
+
+                                });
+
+                            });
+
+                        });
+
+                        converter.json2csv(list, (err, csv) => {
+                            if (err) {
+                                console.log(err);
+                                res.render("error1");
+                            }
+    
+                            console.log(csv);
+    
+                            fs.writeFileSync("list-bukutamu-a.csv", csv);
+                        });
+    
+                        res.redirect("/download-a");
+                        
+                    }
+                })    
+            }
+        });
+
+    }else {
+        res.redirect("/masuk");
+    }
+
+});
+
+app.get("/download-a", function (req,res) {  
+    
+    if (req.isAuthenticated()) {
+        
+        res.download("list-bukutamu-a.csv", function (err) {  
+            if (err) {
+                console.log(err);
+                res.render("error1");
+            } else {
+                fs.unlink("list-bukutamu-a.csv", function (err) {  
+                    if (err) {
+                        console.log(err);
+                        res.render("error1");
                     } else {
                         console.log("File Terdownload & DIhapus");
                         list = [];
@@ -2210,10 +2391,12 @@ app.get("/transaksi", function (req,res) {
         Transaksi.find({userId: req.user.id}, function (err, foundTransaksi) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundTransaksi) {
                 Langganan.find({userId: req.user.id}, function (err, foundLangganan) {  
                     if (err) {
                         console.log(err);
+                        res.render("error1");
                     } else if (foundLangganan) {
                         res.render("transaksi", {transaksi: foundTransaksi, langganan: foundLangganan});
                     }
@@ -2234,6 +2417,7 @@ app.get("/pembayaran/:roomId/:userId", function(req,res) {
         Transaksi.find({userId: req.params.userId, roomId: req.params.roomId}, function (err, foundTransaksi) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundTransaksi) {
                 res.render("pembayaran", {transaksi: foundTransaksi});
             }
@@ -2279,9 +2463,9 @@ app.post("/konfirmasi/transaksi/:roomId/:userId", function (req,res) {
         transporter.sendMail(mailOptions, function (err, success) {  
             if (err){
                 console.log(err);
+                res.render("error1");
             } else {
-                res.redirect("/home");
-                console.log("Check Your email for verification");
+                res.render("proses");
             }
         });
 
@@ -2295,6 +2479,7 @@ app.get("/verifikasi/pembayaran/:roomId/:userId", function (req, res) {
     Transaksi.find({userId: req.params.userId, roomId: req.params.roomId}, function (err, foundTransaksi) {  
         if (err) {
             console.log(err);
+            res.render("error1");
         } else if (foundTransaksi) {
             
             Transaksi.updateOne(
@@ -2306,6 +2491,7 @@ app.get("/verifikasi/pembayaran/:roomId/:userId", function (req, res) {
                         MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
                             if (err) {
                                 console.log(err);
+                                res.render("error1");
                             } else if (foundRoom) {
                                 
                                 foundRoom[0].pesertaid.forEach(function (foundId) {  
@@ -2327,6 +2513,7 @@ app.get("/verifikasi/pembayaran/:roomId/:userId", function (req, res) {
                                     function (err) {  
                                     if (err) {
                                         console.log(err);
+                                        res.render("error1");
                                     } else {
                                         console.log("Update Room Succes");
                                     }
@@ -2341,6 +2528,7 @@ app.get("/verifikasi/pembayaran/:roomId/:userId", function (req, res) {
                     
                     } else {
                         console.log(err);
+                        res.render("error1");
                     }
                 }
             );
@@ -2356,6 +2544,7 @@ app.get("/langganan", function (req, res) {
         User.find({_id: req.user.id}, function (err, foundUser) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else if (foundUser) {
                 res.render("langganan", {user: foundUser});
             }
@@ -2392,6 +2581,7 @@ app.get("/berlangganan/:userId", function (req,res) {
             function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 console.log("update profile berhasil");
             }
@@ -2413,6 +2603,7 @@ app.get("/berlangganan/:userId", function (req,res) {
         newLangganan.save(function (err) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 statLangganan = [];
                 tanggalLangganan = [];
@@ -2435,6 +2626,7 @@ app.get("/pembayaran-langganan/:userId", function (req,res) {
         Langganan.find({userId: req.params.userId}, function (err, found) {  
             if (err) {
                 console.log(err);
+                res.render("error1");
             } else {
                 res.render("Pembayaran-langganan", {langganan: found[found.length-1]});
             }
@@ -2480,9 +2672,10 @@ app.post("/konfirmasi/langganan/:langgananId/:userId", function (req,res) {
         transporter.sendMail(mailOptions, function (err, success) {  
             if (err){
                 console.log(err);
+                res.render("error1");
             } else {
-                res.redirect("/home");
-                console.log("Check Your email for verification");
+                res.render("proses");
+                
             }
         });
 
@@ -2498,6 +2691,7 @@ app.get("/verifikasi/:langgananId/:userId", function (req, res) {
     User.find({_id: req.params.userId}, function (err, foundUser) {  
         if (err) {
             console.log(err);
+            res.render("error1");
         } else {
             User.updateOne(
                 {_id: req.params.userId},
@@ -2508,6 +2702,7 @@ app.get("/verifikasi/:langgananId/:userId", function (req, res) {
                 function (err) {  
                 if (err) {
                     console.log(err);
+                    res.render("error1");
                 } else {
                     console.log("Update status langganan Succes");
 
@@ -2521,6 +2716,7 @@ app.get("/verifikasi/:langgananId/:userId", function (req, res) {
                     Langganan.find({_id: req.params.langgananId}, function (err, found) {  
                         if (err) {
                             console.log(err);
+                            res.render("error1");
                         } else {
 
                             found[0].tanggal.forEach(function (tgl) {  
@@ -2549,6 +2745,7 @@ app.get("/verifikasi/:langgananId/:userId", function (req, res) {
                                 function (err) {  
                                 if (err) {
                                     console.log(err);
+                                    res.render("error1");
                                 } else {
                                     console.log("Update status langganan Succes");
                                     res.redirect("/home");
@@ -2570,6 +2767,13 @@ app.get("/peserta3", function(req,res){
     res.render("peserta3");
 });
 
+app.get("/error", function (req, res) {  
+    res.render("error1");
+});
+
+app.get("*", function (req, res) {  
+    res.render("error");
+});
 
 app.listen(3000, function() {  
     console.log("Server is up on port 3000");

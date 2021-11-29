@@ -1,5 +1,7 @@
 <%- include('partials/header') %>
 
+<input hidden type="number" name="ada" id="ada" value=<%= rooms[0].tanggal.length %>>
+
 <!--Pertemuan-->
 <div class="container-fluid-top">
     <!--Header Content-->
@@ -31,19 +33,27 @@
         <% }); %>
 
         <br>
-        <div class="center" style="text-align: center;">
-            <button class="btn mk-btn-submit" id="kirim" type="submit">Export</button>
-        </div>
+        <form action="/download/a/room/<%= rooms[0]._id %>" method="post">
+            <div class="center" style="text-align: center;">
+                <button class="btn mk-btn-submit" id="kirim" type="submit">Export</button>
+            </div>
+        </form>
 
     </div>
 
     <script>
-        console.log(room[0].tanggal.length);
-        if (room[0].tanggal.length < 0) {
-            document.getElementById("kirim").style.visibility = "hidden";
-        } else if (room[0].tanggal.length > 0) {
-            document.getElementById("kirim").style.visibility = "visible";
+
+        window.addEventListener('load', function () {
+            if (document.getElementById("ada").value == 0) {
+                alert("tes");
+                document.getElementById("kirim").style.visibility = "hidden";
+            } else if (document.getElementById("ada").value == 0) {
+                document.getElementById("kirim").style.visibility = "visible";
         }
+        });
+
+        
+        
     </script>
 
     <%- include('partials/footer') %>
