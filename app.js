@@ -27,6 +27,7 @@ const moment = require("moment");
 // Variables
 let infoRoom = {};
 let listForm = [];
+let infoPembayaran = {};
 let formPeserta = [];
 let pesertaId = [];
 let infotiket = {};
@@ -37,6 +38,8 @@ let hadirArr = [];
 let edit = false;
 let list = [];
 let tanggal = "";
+
+
 const Schema = mongoose.Schema;
 const app = express();
 
@@ -77,8 +80,8 @@ const Transaksi = new mongoose.model("Transaksi", transaksiSchema);
 const langgananSchema = new Schema({
     userId: String,
     statusPembayaran: Array,
-    tanggal: Array,
-    expired: Array,
+    tanggal: Date,
+    expired: Date,
     harga: {
         type: Number,
         default: 15000
@@ -115,7 +118,8 @@ const myroomSchema = new Schema({
         data: Buffer,
         contentType: String
     },
-    tanggal: Array
+    tanggal: Array,
+    infoPembayaran: Object
 });
 
 const MyRoom = new mongoose.model("Myroom", myroomSchema);
@@ -190,7 +194,7 @@ let storage = multer.diskStorage({
         cb(null, "uploads")
     },
     filename: (req,file,cb) => {
-        cb(null, file.filename + "-" + Date.now())
+        cb(null, file.filename + "-" + Date.now()+ "-" + file.originalname)
     }
 });
 
@@ -349,6 +353,7 @@ app.get("/home", function(req,res){
     
     infoRoom = {};
     listForm = [];
+    infoPembayaran = {};
     formPeserta = [];
     pesertaId = [];
     infotiket = {};
@@ -368,8 +373,12 @@ app.get("/home", function(req,res){
                 res.render("error1");
             } else if (foundLangganan.length > 0) {
                 let currentDate = moment().format('DD-MM-YYYY');
+                console.log(currentDate);
+                console.log(foundLangganan[foundLangganan.length-1].expired);
+                console.log(Date.parse(currentDate));
+                console.log(Date.parse(foundLangganan[foundLangganan.length-1].expired));
 
-                if (foundLangganan[foundLangganan.length-1].expired[0] == currentDate) {
+                if (Date.parse(currentDate) >= Date.parse(foundLangganan[foundLangganan.length-1].expired)) {
                     console.log("Sama");
 
                     User.updateOne(
@@ -552,6 +561,7 @@ app.post("/info-bukutamu", function (req,res) {
         const waktuMulai = req.body.mulai;
         const waktuSelesai = req.body.selesai;
         const info = req.body.info;
+        const link = req.body.link;
     
         infoRoom = {
             kegiatan: namaKegiatan,
@@ -562,7 +572,8 @@ app.post("/info-bukutamu", function (req,res) {
             tanggal: tanggal,
             waktuMulai: waktuMulai,
             waktuSelesai: waktuSelesai,
-            info: info
+            info: info,
+            link: link
         };
 
         console.log(infoRoom);
@@ -614,30 +625,46 @@ app.post("/tambahForm", function (req,res) {
 app.post("/form-bukutamu", upload.single("image"), (req,res) => {  
     
     if (req.isAuthenticated()) {
-        const newRoom = new MyRoom({
-            room: infoRoom,
-            form: listForm,
-            userid: req.user.id,
-            jenis: "Buku Tamu",
-            img: {
-                data: fs.readFileSync(path.join(__dirname + "/uploads/" + req.file.filename)),
-                contentType: "image/png" 
-            }
-        });
+
+        if (_.isEmpty(infoRoom)) {
+            res.redirect("/home");
+        } else {
         
-        newRoom.save(function (err) {  
-            if (err) {
-                console.log(err);
-                res.render("error1");
-            } else {
-                console.log("room add Succesfully");
-            }
-        });
+            const newRoom = new MyRoom({
+                room: infoRoom,
+                form: listForm,
+                userid: req.user.id,
+                jenis: "Buku Tamu",
+                img: {
+                    data: fs.readFileSync(path.join(__dirname + "/uploads/" + req.file.filename)),
+                    contentType: "image/png" 
+                }
+            });
+            
+            newRoom.save(function (err) {  
+                if (err) {
+                    console.log(err);
+                    res.render("error1");
+                } else {
+                    console.log("room add Succesfully");
     
-        infoRoom ={};
-        listForm = [];
+                    fs.unlink(req.file.path, function (err) {  
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log("deleted");
+                            infoRoom ={};
+                            listForm = [];
+                            res.redirect("/home");
+                        }
+                    })
+             
+                }
+            });
+
+        }
         
-        res.redirect("/home");
+        
     } else {
         res.redirect("/masuk");
     }
@@ -684,6 +711,7 @@ app.post("/info-edit-bukutamu", function (req,res) {
         const waktuMulai = req.body.mulai;
         const waktuSelesai = req.body.selesai;
         const info = req.body.info;
+        const link = req.body.link;
 
         infoRoom = {
             roomId: roomId,
@@ -695,7 +723,8 @@ app.post("/info-edit-bukutamu", function (req,res) {
             tanggal: tanggal,
             waktuMulai: waktuMulai,
             waktuSelesai: waktuSelesai,
-            info: info
+            info: info,
+            link: link
         };
 
         console.log(infoRoom);
@@ -891,6 +920,7 @@ app.post("/info-event", function (req,res) {
         const waktuMulai = req.body.mulai;
         const waktuSelesai = req.body.selesai;
         const info = req.body.info;
+        const link = req.body.link;
 
         infoRoom = {
             kegiatan: namaKegiatan,
@@ -901,14 +931,14 @@ app.post("/info-event", function (req,res) {
             tanggal: tanggal,
             waktuMulai: waktuMulai,
             waktuSelesai: waktuSelesai,
-            info: info
+            info: info,
+            link: link
         };
         console.log(infoRoom);
         res.redirect("/room-ticket");
     }else {
         res.redirect("/masuk");
-    }
-    
+    }    
     
 });
 
@@ -950,7 +980,7 @@ app.post("/room-ticket", function(req,res){
             }
     
             console.log(infotiket);
-            res.redirect("/form-event");
+            res.redirect("/info-pembayaran");
         } else {
             infotiket={
                 jenisTicket: jenisTiket,
@@ -960,7 +990,7 @@ app.post("/room-ticket", function(req,res){
             }
     
             console.log(infotiket);
-            res.redirect("/form-event")
+            res.redirect("/info-pembayaran")
         }    
         
     }else {
@@ -968,6 +998,49 @@ app.post("/room-ticket", function(req,res){
     }
     
     
+});
+
+app.get("/info-pembayaran", function (req, res) {
+    
+    if (req.isAuthenticated()) {
+        
+        if (_.isEmpty(infoRoom)) {
+            res.redirect("/home");
+        } else {
+
+            res.render("infoPembayaran");
+
+        }
+        
+    } else {
+        res.redirect("/masuk");
+    }
+
+});
+
+app.post("/info-pembayaran", function (req, res) {  
+
+    if (req.isAuthenticated()) {
+        
+        if (_.isEmpty(infoRoom)) {
+            res.redirect("/home");
+        } else {
+
+            infoPembayaran = {
+                nama: req.body.nama,
+                pembayaran: req.body.pembayaran,
+                nomor: req.body.nomor
+            }
+
+            console.log(infoPembayaran);
+            res.redirect("/form-event");
+
+        }
+        
+    } else {
+        res.redirect("/masuk");
+    }
+
 });
 
 app.get("/form-event", function (req, res) {  
@@ -1005,7 +1078,8 @@ app.post("/form-event", upload.single("image"), (req, res) => {
             img: {
                 data: fs.readFileSync(path.join(__dirname + "/uploads/" + req.file.filename)),
                 contentType: "image/png" 
-            }
+            },
+            infoPembayaran: infoPembayaran
         });
         
         newRoom.save(function (err) {  
@@ -1014,14 +1088,25 @@ app.post("/form-event", upload.single("image"), (req, res) => {
                 res.render("error1");
             } else {
                 console.log("room add Succesfully");
+
+                fs.unlink(req.file.path, function (err) {  
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        infoRoom ={};
+                        infotiket={};
+                        listForm = [];
+                        infoPembayaran = {};
+                        
+                        res.redirect("/home");
+                    }
+                })
+
+                
             }
         });
     
-        infoRoom ={};
-        infotiket={};
-        listForm = [];
         
-        res.redirect("/home");
     }else {
         res.redirect("/masuk");
     }
@@ -1057,6 +1142,7 @@ app.post("/info-edit-event", function (req, res) {
         const waktuMulai = req.body.mulai;
         const waktuSelesai = req.body.selesai;
         const info = req.body.info;
+        const link = req.body.link;
 
         infoRoom = {
             roomId: roomId,
@@ -1068,7 +1154,8 @@ app.post("/info-edit-event", function (req, res) {
             tanggal: tanggal,
             waktuMulai: waktuMulai,
             waktuSelesai: waktuSelesai,
-            info: info
+            info: info,
+            link: link
         };
 
         console.log(infoRoom);
@@ -1100,6 +1187,7 @@ app.get("/ticket-edit-event", function (req, res) {
                     } else {
     
                         console.log("Not found");
+                        res.render("error1");
     
                     }
                 }
@@ -1138,7 +1226,7 @@ app.post("/ticket-edit-event", function (req, res) {
             }
     
             console.log(infotiket);
-            res.redirect("/form-edit-event");
+            res.redirect("/info-pembayaran-edit");
         } else {
             infotiket={
                 jenisTicket: jenisTiket,
@@ -1148,7 +1236,7 @@ app.post("/ticket-edit-event", function (req, res) {
             }
     
             console.log(infotiket);
-            res.redirect("/form-edit-event");
+            res.redirect("/info-pembayaran-edit");
         }
         
     }else {
@@ -1156,6 +1244,65 @@ app.post("/ticket-edit-event", function (req, res) {
     }
     
 });
+
+app.get("/info-pembayaran-edit", function (req, res) {
+    
+    if (req.isAuthenticated()) {
+        
+        if (_.isEmpty(infoRoom)) {
+            res.redirect("/home");
+        } else {
+
+            MyRoom.find({_id: infoRoom.roomId}, function (err, foundRoom) {  
+                if (err) {
+                    console.log(err);
+                    res.render("error1");
+                } else {
+                    if (foundRoom) {
+    
+                        res.render("infoPembayaran-edit",{rooms: foundRoom});
+    
+                    } else {
+    
+                        console.log("Not found");
+    
+                    }
+                }
+            });
+
+        }
+        
+    } else {
+        res.redirect("/masuk");
+    }
+
+});
+
+app.post("/info-pembayaran-edit", function (req, res) {  
+
+    if (req.isAuthenticated()) {
+        
+        if (_.isEmpty(infoRoom)) {
+            res.redirect("/home");
+        } else {
+
+            infoPembayaran = {
+                nama: req.body.nama,
+                pembayaran: req.body.pembayaran,
+                nomor: req.body.nomor
+            }
+
+            console.log(infoPembayaran);
+            res.redirect("/form-edit-event");
+
+        }
+        
+    } else {
+        res.redirect("/masuk");
+    }
+
+});
+
 
 app.get("/form-edit-event", function(req,res){
     
@@ -1213,7 +1360,7 @@ app.get("/form-edit-event", function(req,res){
 
 });
 
-app.post("/form-edit-event", upload.single("image"), (req,res) =>{  
+app.post("/form-edit-event", upload.single("image"), (req,res) =>{      
     
     if (req.isAuthenticated()) {
 
@@ -1228,7 +1375,8 @@ app.post("/form-edit-event", upload.single("image"), (req,res) =>{
                     img: {
                         data: fs.readFileSync(path.join(__dirname + "/uploads/" + req.file.filename)),
                         contentType: "image/png" 
-                    }
+                    },
+                    infoPembayaran: infoPembayaran
                 },
                 function (err) {  
                 if (err) {
@@ -1236,13 +1384,21 @@ app.post("/form-edit-event", upload.single("image"), (req,res) =>{
                     res.render("error1");
                 } else {
                     console.log("Update Succes");
-        
-                    infoRoom ={};
-                    infotiket={};
-                    listForm = [];
-                    edit=false;
-                    console.log(infoRoom, infotiket, listForm);
-                    res.redirect("/home")
+                    
+                    fs.unlink(req.file.path, function (err) {  
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            infoRoom ={};
+                            infotiket={};
+                            listForm = [];
+                            edit=false;
+                            console.log(infoRoom, infotiket, listForm);
+                            res.redirect("/home");
+                        }
+                    })
+
+                    
                 }
             });
 
@@ -1254,6 +1410,7 @@ app.post("/form-edit-event", upload.single("image"), (req,res) =>{
                     room: infoRoom, 
                     ticket: infotiket,
                     form: listForm,
+                    infoPembayaran: infoPembayaran
                 },
                 function (err) {  
                 if (err) {
@@ -1306,11 +1463,23 @@ app.get("/room/hapus/:roomId", function (req, res) {
 
         MyRoom.deleteOne({_id: requestedRoomId}, function (err) {
             if (!err) {
-            console.log("Deleted");
-            res.redirect("/home");
+
+                Peserta.deleteMany({roomId: requestedRoomId}, function (err) {
+                    if (!err) {
+        
+                        console.log("Deleted");
+                        res.redirect("/home");
+
+                    } else {
+                        res.send(err);
+                        res.render("error1");
+                    }
+                });    
+
+
             } else {
-            res.send(err);
-            res.render("error1");
+                res.send(err);
+                res.render("error1");
             }
         });
     }else {
@@ -2099,10 +2268,7 @@ app.post("/hadir/p/:pesertaId", function (req,res) {
 
                 console.log("tanggal peserta ARR " + tanggalPesertaArr);
                 console.log("waktu ARR " + waktuArr);
-                console.log("hadir ARR " + hadirArr);
-
-                
-                    
+                console.log("hadir ARR " + hadirArr);              
                 
             }
         });
@@ -2429,47 +2595,117 @@ app.get("/pembayaran/:roomId/:userId", function(req,res) {
       
 });
 
-app.post("/konfirmasi/transaksi/:roomId/:userId", function (req,res) {  
+app.post("/konfirmasi/transaksi/:roomId/:userId", upload.single("image"), (req,res) =>{  
 
     if (req.isAuthenticated()) {
+        console.log("masuk");
         
-        const token_jwt = jwt.sign({data: req.params.roomId}, req.params.userId);
+        MyRoom.find({_id: req.params.roomId}, function (err, foundRoom) {  
 
-        const transporter = nodemailer.createTransport({
-            service:"gmail",
-            auth:{
-                user: process.env.EMAIL,
-                pass: process.env.PASS,
-            },
-            tls: {
-                rejectUnauthorized:false,
-            }
-        });
-
-        const mailOptions = {
-            from: process.env.EMAIL,
-            to: process.env.EMAIL1,
-            subject: "Verifikasi Pembayaran "+req.body.namaPengirim,
-            html: `<h1>Verifikasi Pembayaran</h1>
-                <h2>Silahkan Lakukan Pengecekkan Pembayaran oleh User dengan ID: ${req.params.userId}</h2>
-                <h3>Atas Nama: ${req.body.namaPengirim}</h3>
-                <h3>Bank: ${req.body.namaBank}</h3>
-                <h3>Jika Pembayaran Sudah Di Konfirmasi Silahkan Klik Link Tautan Dibawah</h3>
-                <a href=http://localhost:3000/verifikasi/pembayaran/${req.params.roomId}/${req.params.userId}>
-                Klik disini</a>
-                </div>`,
-        };
-
-        transporter.sendMail(mailOptions, function (err, success) {  
-            if (err){
+            if (err) {
                 console.log(err);
+                console.log("Sini");
                 res.render("error1");
+            } else if (foundRoom.length > 0) {
+                console.log(foundRoom[0].userid);
+                User.find({_id: foundRoom[0].userid}, function (err, foundUser) {  
+
+                    if (err) {
+                        console.log(err);
+                        res.render("error1");
+                    } else if (foundUser) {
+                        
+                        // const token_jwt = jwt.sign({data: req.params.roomId}, req.params.userId);
+
+                        const transporter = nodemailer.createTransport({
+                            service:"gmail",
+                            auth:{
+                                user: process.env.EMAIL,
+                                pass: process.env.PASS,
+                            },
+                            tls: {
+                                rejectUnauthorized:false,
+                            }
+                        });
+
+                        const mailOptions = {
+                            from: process.env.EMAIL,
+                            to: process.env.EMAIL1,
+                            subject: "Verifikasi Pembayaran "+req.body.namaPengirim,
+                            html: `<h1>Verifikasi Pembayaran Room ${foundRoom[0].room.kegiatan}</h1>
+                                <h2>Silahkan Lakukan Pengecekkan Pembayaran oleh User dengan ID: ${req.params.userId}</h2>
+                                <h3>Atas Nama: ${req.body.namaPengirim}</h3>
+                                <h3>Bank: ${req.body.namaBank}</h3>
+                                <hr>
+                                <h2>Dengan Detail Room Sebagai Berikut</h2>
+                                <h3>ID Room: ${foundRoom[0]._id}</h3>
+                                <h3>Nama Room: ${foundRoom[0].room.kegiatan}</h3>
+                                <h3>Info Room: ${foundRoom[0].room.info}</h3>
+                                <hr>
+                                <h2>Tiket</h2>
+                                <h3>Harga Ticket: ${foundRoom[0].ticket.hargaTicket}</h3>
+                                <h3>Fee Ticket: ${foundRoom[0].ticket.feeTicket}</h3>
+                                <hr>
+                                <h2>Pemilik Room</h2>
+                                <h3>User Id: ${foundUser[0]._id}</h3>
+                                <h3>Nama: ${foundUser[0].nama}</h3>
+                                <h3>Email: ${foundUser[0].username}</h3>
+                                <hr>
+                                <h2>Pembayaran</h2>
+                                <h3>Nama: ${foundRoom[0].infoPembayaran.nama}</h3>
+                                <h3>Pembayaran: ${foundRoom[0].infoPembayaran.pembayaran}</h3>
+                                <h3>Nomor Tujuan/Rekening: ${foundRoom[0].infoPembayaran.nomor}</h3>
+                                
+                                <hr>
+                                <h3>Jika Pembayaran Sudah Di Konfirmasi Silahkan Klik Link Tautan Dibawah</h3>
+                                <a href=http://localhost:3000/verifikasi/pembayaran/${req.params.roomId}/${req.params.userId}>
+                                Klik disini</a>
+                                </div>`,
+                            attachments: [
+                                {
+                                 path: req.file.path,
+                                 contentType: "image/png"
+                                }
+                            ]
+                            
+                        };
+
+                        console.log(req.file.path);
+
+                        transporter.sendMail(mailOptions, function (err, success) {  
+                            if (err){
+                                console.log(err);
+                                res.render("error1");
+                            } else {
+                                fs.unlink(req.file.path, function (err) {  
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        console.log("deleted");
+                                        res.render("proses");
+                                    }
+                                })
+                                
+                            }
+                        });
+
+                    } else {
+
+                        res.render("error1");
+
+                    }
+
+                });
+
             } else {
-                res.render("proses");
+
+                res.render("error1");
+
             }
+
         });
 
-    }else {
+    } else {
         res.redirect("/masuk");
     }
 
@@ -2568,10 +2804,6 @@ app.get("/berlangganan/:userId", function (req,res) {
 
         console.log(currentDate) //  Will result --> 31/10/2015
         console.log(expiredDate) //  Will result --> 30/11/2015 
-
-        let tanggalLangganan = [];
-        let tanggalExpired = [];
-        let statLangganan = [];
         
         User.updateOne(
             {_id: req.params.userId},
@@ -2587,16 +2819,12 @@ app.get("/berlangganan/:userId", function (req,res) {
             }
         });
 
-        tanggalLangganan.push(currentDate);
-        tanggalExpired.push(expiredDate);
-        statLangganan.push("Belum Lunas");
-
         const newLangganan = new Langganan({
 
             userId: req.user.id,
-            statusPembayaran: statLangganan,
-            tanggal: tanggalLangganan,
-            expired: tanggalExpired
+            statusPembayaran: "Belum Lunas",
+            tanggal: currentDate,
+            expired: expiredDate
             
         });
 
@@ -2605,9 +2833,7 @@ app.get("/berlangganan/:userId", function (req,res) {
                 console.log(err);
                 res.render("error1");
             } else {
-                statLangganan = [];
-                tanggalLangganan = [];
-                tanggalExpired = [];
+
                 console.log("Transaksi add Succesfully");
                 res.redirect("/pembayaran-langganan/"+req.user.id);
             }
@@ -2638,7 +2864,7 @@ app.get("/pembayaran-langganan/:userId", function (req,res) {
 
 });
 
-app.post("/konfirmasi/langganan/:langgananId/:userId", function (req,res) {  
+app.post("/konfirmasi/langganan/:langgananId/:userId", upload.single("image"), (req,res) =>{  
 
     if (req.isAuthenticated()) {
         
@@ -2667,6 +2893,12 @@ app.post("/konfirmasi/langganan/:langgananId/:userId", function (req,res) {
                 <a href=http://localhost:3000/verifikasi/${req.params.langgananId}/${req.params.userId}>
                 Klik disini</a>
                 </div>`,
+            attachments: [
+                {
+                 path: req.file.path,
+                 contentType: "image/png"
+                }
+            ]
         };
 
         transporter.sendMail(mailOptions, function (err, success) {  
@@ -2674,7 +2906,15 @@ app.post("/konfirmasi/langganan/:langgananId/:userId", function (req,res) {
                 console.log(err);
                 res.render("error1");
             } else {
-                res.render("proses");
+                
+                fs.unlink(req.file.path, function (err) {  
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("deleted");
+                        res.render("proses");
+                    }
+                });
                 
             }
         });
@@ -2709,9 +2949,6 @@ app.get("/verifikasi/:langgananId/:userId", function (req, res) {
                     var currentDate = moment().format('DD-MM-YYYY');
                     var expiredDate = moment().add(1, 'M').format('DD-MM-YYYY');
 
-                    let tanggalLangganan = [];
-                    let tanggalExpired = [];
-                    let statLangganan = [];
 
                     Langganan.find({_id: req.params.langgananId}, function (err, found) {  
                         if (err) {
@@ -2719,28 +2956,12 @@ app.get("/verifikasi/:langgananId/:userId", function (req, res) {
                             res.render("error1");
                         } else {
 
-                            found[0].tanggal.forEach(function (tgl) {  
-                                tanggalLangganan.push(tgl);
-                            });
-                        
-                            found[0].expired.forEach(function (tglex) {  
-                                tanggalExpired.push(tglex);
-                            });
-                        
-                            found[0].statusPembayaran.forEach(function (stat) {  
-                                statLangganan.push(stat);
-                            });
-                        
-                            tanggalLangganan[tanggalLangganan.length-1] = currentDate;
-                            tanggalExpired[tanggalExpired.length-1] = expiredDate;
-                            statLangganan[statLangganan.length-1] = "Lunas";
-                        
                             Langganan.updateOne(
                                 {_id: req.params.langgananId},
                                 {
-                                statusPembayaran: statLangganan,
-                                tanggal: tanggalLangganan,
-                                expired: tanggalExpired
+                                statusPembayaran: "Lunas",
+                                tanggal: currentDate,
+                                expired: expiredDate
                                 },
                                 function (err) {  
                                 if (err) {
@@ -2775,7 +2996,11 @@ app.get("*", function (req, res) {
     res.render("error");
 });
 
-app.listen(3000, function() {  
-    console.log("Server is up on port 3000");
-    
+let port = process.env.PORT;
+if (port == null || port == ""){
+  port = 3000;
+}
+
+app.listen(port, function() {
+  console.log("Server started on " +port);
 });

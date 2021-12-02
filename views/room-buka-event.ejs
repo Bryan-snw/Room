@@ -28,6 +28,8 @@
             <h4><%= rooms[0].pesertaid.length %>  Tiket Terjual</h4>
             <h4><%= rooms[0].ticket.kuotaTicket - rooms[0].pesertaid.length %> Tiket Tersisa</h4>
             <h4> <%= rooms[0].ticket.kuotaTicket %> Kuota Tiket </h4>
+            <h4> Kontak: <%= rooms[0].room.info %></h4>
+            <h4> IDR <%= rooms[0].ticket.hargaTicket %></h4>
             <h4>ID Room: <%= rooms[0]._id %></h4>
 
             <input type="text" id="roomId" hidden value="<%= rooms[0]._id %>">

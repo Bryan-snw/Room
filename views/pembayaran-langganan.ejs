@@ -57,12 +57,14 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form id="submit_form" action="/konfirmasi/langganan/<%= langganan._id %>/<%= langganan.userId %>" method="post">
+                    <form id="submit_form" action="/konfirmasi/langganan/<%= langganan._id %>/<%= langganan.userId %>" method="post" enctype="multipart/form-data">
                       <div class="modal-body">
                         <label for="exampleFormControlInput1" class="form-label">Nama Pengirim</label>
                         <input required type="text" name="namaPengirim" class="form-control" id="exampleFormControlInput1" placeholder="John">
                         <label for="exampleFormControlInput1" class="form-label">Bank</label>
                         <input required type="text" name="namaBank" class="form-control" id="exampleFormControlInput1" placeholder="BCA">
+                        <label for="exampleFormControlInput1" class="form-label">Bukti Pembayaran</label>
+                        <input required type="file" accept="image/*" name="image" class="form-control" id="image">
                       </div>
                       <div class="modal-footer">
                         <button type="submit" class="btn btn-outline-primary">Sudah</button>

@@ -12,7 +12,7 @@
                 <div class="center">
                   
                   <label for="exampleFormControlInput1" class="form-label">Upload Foto</label>
-                  <input type="file" required class="form-control" id="image" name="image" value="" >
+                  <input type="file" accept="image/*" required class="form-control" id="image" name="image" value="" >
                 
                 </div>
                 
@@ -30,7 +30,7 @@
                     </div>  
             </div>
                 <div class="center" style="text-align: center;">
-                    <button class="btn mk-btn-submit" type="submit">Buat</button>
+                    <button class="btn mk-btn-submit" type="submit" id="buat" >Buat</button>
                 </div>
                 </form>
 
@@ -69,7 +69,9 @@
     <script type="text/javascript">
       function form_submit() {
         document.getElementById("submit_form").submit();
-       }    
+       }
+
+       $("#buat").click(document.getElementById("buat").disbaled);
     </script>
 
 <%- include('partials/footer') %>

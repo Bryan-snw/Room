@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+    <!--Content-->
+    <div class="container-fluid-top">
+      <form action="/info-pembayaran-edit" method="post">
+        <div>
+            <h1>Event</h1>
+
+            <div class="card room">
+              
+              <div class="img-header-card center">
+                <img src="/Images/logo.png" class="card-img-top" alt="Picture">
+              </div>
+                
+                <div class="center">
+                  <!-- Info Room -->
+                    <h2>Info Pembayaran Anda</h2>
+                    <hr>
+
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Atas Nama</label>
+                        <input type="text" required class="form-control" name="nama" id="nama" value="<%= rooms[0].infoPembayaran.nama %>">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="exampleFormControlInput1" class="form-label">Bank/Layanan Pembayaran lainnya</label>
+                      <input type="text" required class="form-control" name="pembayaran" id="pembayaran" value="<%= rooms[0].infoPembayaran.pembayaran %>">
+                      <h6 class="note" id="note1">
+                        *Masukan jenis pembayaran yang anda ingin gunakan
+                    </h6>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">No Rekening/No Tujuan</label>
+                        <input type="text" required class="form-control" name="nomor" id="nomor" value="<%= rooms[0].infoPembayaran.nomor %>">
+                        <h6 class="note" id="note1">
+                            *Masukan No Rekening / No Tujuan yang anda gunakan
+                        </h6>
+                    </div>
+
+                  
+                </div>
+
+            </div>
+            
+            <div class="center" style="text-align: center;">
+              <button class="btn mk-btn-submit" id="kirim" type="submit" >Selanjutnya</button>
+            </div>
+
+        </div>
+      </form>
+    </div>  
+   
+<%- include('partials/footer') %>
