@@ -47,10 +47,17 @@ A:hover{
     line-height: 1.5;
     font-weight:normal;
 }
-
+.nav{
+    background-color: #9dd7d0;
+}
 .bg{
-    background-color: #ec9dc1;
-    background-image: linear-gradient(180deg, #9dd7d0 20%, #ec9dc1 80%);
+    /* background-color: #ec9dc1; */
+    background-image: linear-gradient(180deg, #9dd7d0 30%, #ec9dc1 70%);
+    background-repeat: no-repeat;
+}
+.bg1{
+    /* background-color: #ec9dc1; */
+    background-image: linear-gradient(180deg, #ec9dc1 20%, #9dd7d0 80%);
     background-repeat: no-repeat;
 }
 
@@ -59,10 +66,20 @@ A:hover{
     
 }
 
+.container-fluid-bottom{
+    padding: 0% 15%;
+    padding-top: 3%;
+    
+}
+
 .container-fluid-top{
     padding: 0% 15%;
     padding-bottom: 3%;
     
+}
+
+.cl{
+    padding: 2%;
 }
 
 .dv-card{
@@ -445,6 +462,11 @@ height: auto;
     margin: 5% auto;
 }
 
+.ver-text1{
+    margin: 13% auto;
+    text-align: justify;
+}
+
 .transaksi{
     text-align: center;
 }
@@ -459,6 +481,36 @@ height: auto;
     font-size: 5rem;
     text-align: center;
 }
+
+.img-tutor{
+    width: 60%;
+    text-align: center;
+}
+
+.tutor-style{
+    font-size: 1.2rem;
+}
+
+.tutor{
+    color: black;
+    font-weight: bold;
+}
+
+
+  .gfg{
+    position: relative;
+  }
+
+  .foot{
+    position: absolute;
+    top: 120px;
+    left: 750px;
+  }
+
+  .lp-img{
+    width: 50%;
+    margin: 2% auto;
+}  
 
 @media (max-width:991px){
     .img-header-card{
@@ -510,4 +562,20 @@ height: auto;
     .error{
         font-size: 3rem;
     }
+    .img-tutor{
+        width: 100%;
+        text-align: center;
+    }
+    .lp-img{
+        width: 40%;
+    }  
+    .ver-text1{
+        margin: 10% auto;
+        text-align: center;
+    }
+    .cl{
+        margin: 4% 0%;
+        padding: 2%;
+    }
+    
 }

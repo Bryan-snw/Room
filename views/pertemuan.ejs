@@ -37,6 +37,9 @@
             <div class="center" style="text-align: center;">
                 <button class="btn mk-btn-submit" id="kirim" type="submit">Export</button>
             </div>
+            <div class="center" style="text-align: center;">
+                <a class="tutor" id="tutor" href="/tutorial/export">Tutorial Export</a>
+            </div>
         </form>
 
     </div>
@@ -47,8 +50,10 @@
             if (document.getElementById("ada").value == 0) {
                 alert("tes");
                 document.getElementById("kirim").style.visibility = "hidden";
+                document.getElementById("tutor").style.visibility = "hidden";
             } else if (document.getElementById("ada").value == 0) {
                 document.getElementById("kirim").style.visibility = "visible";
+                document.getElementById("tutor").style.visibility = "visible";
         }
         });
 

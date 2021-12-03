@@ -2992,6 +2992,14 @@ app.get("/error", function (req, res) {
     res.render("error1");
 });
 
+app.get("/tutorial", function (req, res) {  
+    res.render("tutorial");
+});
+
+app.get("/tutorial/export", function (req, res) {  
+    res.render("tutorial-export");
+});
+
 app.get("*", function (req, res) {  
     res.render("error");
 });
