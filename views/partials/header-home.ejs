@@ -67,9 +67,19 @@
             <script type="text/javascript">
               function cari() {
                 
-                let value = "/cari/"+document.getElementById("cari").value;
-                document.getElementById("form1").action = value;
-                document.form1.submit();
+                
+                 
+                if (!document.getElementById("cari").value == "") {
+                  let value = "/cari/"+document.getElementById("cari").value;
+                  document.getElementById("form1").action = value;
+                  document.form1.submit(); 
+                } else {
+                  alert("Input Masih Kosong")
+                  document.getElementById("form1").method = "get"
+                  document.getElementById("form1").action = "/home";
+                  document.form1.submit(); 
+                }
+
               };
 
               $("#btnCari").click(cari);

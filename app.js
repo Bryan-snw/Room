@@ -22,6 +22,7 @@ const qrcode = require("qrcode");
 const converter = require('json-2-csv');
 const e = require('express');
 const moment = require("moment");
+const { max } = require('lodash');
 
 
 // Variables
@@ -63,6 +64,15 @@ mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB Connection Error"));
+
+// Tanggal
+// ForMyGuest
+const tanggalSchema = new Schema({
+    awal: Date,
+    akhir: Date
+});
+
+const Tanggal = new mongoose.model("Tanggal", tanggalSchema);
 
 // Status Transaksi
 const transaksiSchema = new Schema({
@@ -149,6 +159,11 @@ const userSchema = new Schema({
     proses: {
         type: String,
         default: ""
+    },
+    limit:{
+        type: Number,
+        default: 0,
+        max: 3
     }
 });
 
@@ -203,7 +218,68 @@ let upload = multer({storage: storage});
 
 // Route
 app.get("/", function(req,res,next){
-    
+
+    const startOfMonth = moment().startOf('month').format('DD-MM-YYYY');
+    const expiredDate = moment().startOf('month').add(1, 'M').format('DD-MM-YYYY');
+    const currentDate = moment().format('DD-MM-YYYY');
+
+    Tanggal.find({}, function (err, foundTanggal) {  
+        if (err) {
+            console.log(err);
+            req.render("error1");
+        } else if (foundTanggal.length < 1){
+
+            const newTanggal = new Tanggal({
+                awal: startOfMonth,
+                akhir: expiredDate
+            });
+
+            newTanggal.save(function (err) {  
+                if (err) {
+                    console.log(err);
+                    res.render("error1");
+                } else {
+                    console.log("Sukses");
+                }
+            })
+        } else if (foundTanggal.length > 0) {
+
+            if (Date.parse(currentDate) >= Date.parse(foundTanggal[0].akhir)) {
+
+                Tanggal.updateOne(
+                    {_id: foundTanggal[0]._id},
+                    {
+                    awal: startOfMonth,
+                    akhir: expiredDate
+                    },
+                    function (err) {  
+                    if (err) {
+                        console.log(err);
+                        res.render("error1");
+                    } else {
+                        console.log("Update tanggal Succes");
+
+                        User.updateMany(
+                            {},
+                            {
+                            limit: 0
+                            },
+                            function (err) {  
+                            if (err) {
+                                console.log(err);
+                                res.render("error1");
+                            } else {
+                                console.log("Sukse update Limit");
+                            }
+                        });
+                    }
+                });
+
+            }
+        }
+
+    });
+
     res.render("landingpage");
 });
 
@@ -404,12 +480,14 @@ app.get("/home", function(req,res){
                 console.log(err);
                 res.render("error1");
             } else {
+                let jmlroom = foundUser[0].limit;
+                // console.log(foundUser[0].limit);
                 MyRoom.find({userid: req.user.id}, function (err, foundRoom) {  
                     if (err) {
                         console.log(err);
                         res.render("error1");
                     } else {
-                        let jmlroom = foundRoom.length;
+                        // let jmlroom = foundRoom.length;
                         MyRoom.find({pesertaid: req.user.id, jenis: "Event"}, function (err, foundEvent) {  
                             if (err) {
                                 console.log(err);
@@ -647,17 +725,43 @@ app.post("/form-bukutamu", upload.single("image"), (req,res) => {
                     res.render("error1");
                 } else {
                     console.log("room add Succesfully");
-    
-                    fs.unlink(req.file.path, function (err) {  
+
+                    User.find({_id: req.user.id}, function (err, foundUser) {  
                         if (err) {
                             console.log(err);
+                            req.render("error1");
                         } else {
-                            console.log("deleted");
-                            infoRoom ={};
-                            listForm = [];
-                            res.redirect("/home");
+
+                            let limits = foundUser[0].limit + 1;
+                            User.updateOne(
+                                {_id: req.user.id},
+                                {
+                                    limit: limits
+                                },
+                                function (err) {  
+                                if (err) {
+                                    console.log(err);
+                                    res.render("error1");
+                                } else {
+                                    console.log("Update Succes");
+                        
+                                    fs.unlink(req.file.path, function (err) {  
+                                        if (err) {
+                                            console.log(err);
+                                        } else {
+                                            console.log("deleted");
+                                            infoRoom ={};
+                                            listForm = [];
+                                            res.redirect("/home");
+                                        }
+                                    })
+                                }
+                            });
+                            
                         }
-                    })
+                    });
+    
+                   
              
                 }
             });
@@ -1089,18 +1193,42 @@ app.post("/form-event", upload.single("image"), (req, res) => {
             } else {
                 console.log("room add Succesfully");
 
-                fs.unlink(req.file.path, function (err) {  
+                User.find({_id: req.user.id}, function (err, foundUser) {  
                     if (err) {
                         console.log(err);
+                        req.render("error1");
                     } else {
-                        infoRoom ={};
-                        infotiket={};
-                        listForm = [];
-                        infoPembayaran = {};
+
+                        let limits = foundUser[0].limit + 1;
+                        User.updateOne(
+                            {_id: req.user.id},
+                            {
+                                limit: limits
+                            },
+                            function (err) {  
+                            if (err) {
+                                console.log(err);
+                                res.render("error1");
+                            } else {
+                                console.log("Update Succes");
+                    
+                                fs.unlink(req.file.path, function (err) {  
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        infoRoom ={};
+                                        infotiket={};
+                                        listForm = [];
+                                        infoPembayaran = {};
+                                        
+                                        res.redirect("/home");
+                                    }
+                                })
+                            }
+                        });
                         
-                        res.redirect("/home");
                     }
-                })
+                });
 
                 
             }

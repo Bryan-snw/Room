@@ -1,7 +1,7 @@
 <%- include('partials/header-home') %>
 
     <h2 hidden id="status" ><%= status[0].langganan %></h2>
-    <h2 hidden id="jumlah" ><%= room %></h2>    
+    <h2 id="jumlah" ><%= room %></h2>    
 
     <!--Scan Barcode-->
     <div class="container-fluid">
@@ -295,7 +295,7 @@
             let status = document.getElementById("status").textContent;
             let jumlah = document.getElementById("jumlah").textContent;
             
-            if (status === "false" && jumlah == 3) {
+            if (status === "false" && jumlah >= 3) {
                 alert("Batas");
                 document.getElementById("buatroom").setAttribute("data-target", "#batas");
             } else {
