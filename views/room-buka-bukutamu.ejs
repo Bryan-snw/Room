@@ -25,7 +25,9 @@
         <div class="center data-card">
 
             <h4>Tanggal: <%= rooms[0].room.tanggal %> </h4>
+            <h4>Deskripsi: <%= rooms[0].room.deskripsi %> </h4>
             <h4><%= rooms[0].room.lokasi %>, <%= rooms[0].room.kota %></h4>
+            <h4>Waktu: <%= rooms[0].room.waktuMulai %> - <%= rooms[0].room.waktuSelesai %></h4>
             <h4>ID Room: <%= rooms[0]._id %></h4>
 
             <input type="text" id="roomId" hidden value="<%= rooms[0]._id %>">

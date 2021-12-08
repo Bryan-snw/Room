@@ -316,6 +316,7 @@ app.post("/masuk",function (req, res) {
             res.render("error1");
         } else if (!foundUser) {
             console.log("AKun tidak ditemukan!");
+    
             res.redirect("/daftar");
         } else {
 
@@ -385,7 +386,7 @@ app.post("/daftar", function (req,res) {
                         console.log(err);
                         res.render("error1");
                     } else {
-                        res.redirect("/verifikasi");
+                        res.render("verifikasi");
                         console.log("Check Your email for verification");
                     }
                 });
@@ -394,10 +395,6 @@ app.post("/daftar", function (req,res) {
         }
      });
 
-});
-
-app.get("/verifikasi", function (req,res) {
-    res.render("verifikasi");
 });
 
 app.get("/verifikasi/:token", function(req, res){
@@ -423,6 +420,97 @@ app.get("/verifikasi/:token", function(req, res){
         );
       }
     });  
+});
+
+app.get("/lupa-password", function (req, res) {  
+    res.render("lupa-password");
+});
+
+app.post("/lupa-password", function (req,res) {  
+
+    User.find({username: req.body.username}, function (err, user) {  
+
+        if (err) {
+            console.log(err);
+        } else {
+
+            console.log(user[0]);
+
+            const transporter = nodemailer.createTransport({
+                service:"gmail",
+                auth:{
+                    user: process.env.EMAIL,
+                    pass: process.env.PASS,
+                },
+                tls: {
+                    rejectUnauthorized:false,
+                }
+            });
+
+            const mailOptions = {
+                from: process.env.EMAIL,
+                to: req.body.username,
+                subject: "Ubah Password",
+                html: `<h1>Ubah Password</h1>
+                    <h2>Hello ${user[0].nama}</h2>
+                    <h4>Silahkan klik link dibawah ini untuk membuat password baru.</h4>
+                    <a href=http://localhost:3000/lupa-password/verifikasi/${user[0]._id}/${user[0].token}> Klik disini</a>
+                    </div>`,
+            };
+
+            transporter.sendMail(mailOptions, function (err, success) {  
+                if (err){
+                    console.log(err);
+                    res.render("error1");
+                } else {
+                    res.render("verifikasi-lupa-password");
+                    console.log("Check Your email for verification");
+                }
+            });
+
+        }        
+
+    });
+
+});
+
+app.get("/lupa-password/verifikasi/:userId/:token", function (req,res) {  
+    res.render("lupa-password-1",{token: req.params.token, userId: req.params.userId});
+});
+
+app.post("/lupa-password-1/:userId/:token",function (req,res) {  
+
+    User.find({_id: req.params.userId, token: req.params.token}, function (err, user) {  
+
+        if (err) {
+            console.log(err);
+        } else {
+
+            
+            console.log("Ketemu");
+            console.log(user[0]);
+
+            user[0].setPassword(req.body.password, function (err, users) {  
+                if (err) {
+                    console.log(err);
+                } else { 
+                    user[0].save(function (err) {  
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log("Password diubah");
+                            console.log(users);
+                            res.redirect("/masuk");
+                        }
+                    });
+                     
+                }
+            });
+        }
+        
+
+    });
+
 });
 
 app.get("/home", function(req,res){
@@ -525,7 +613,7 @@ app.get("/profil", function(req,res){
             } else {
                 let userName = _.startCase(foundUser[0].nama)
                 console.log(userName);
-                res.render("profil", {UserName: userName});
+                res.render("profil", {UserName: userName, userId: foundUser[0]._id});
             }
         });
     } else {
@@ -533,6 +621,52 @@ app.get("/profil", function(req,res){
     }
     
     
+});
+
+app.post("/hapus-akun/:userId", function (req,res) {  
+    if (req.isAuthenticated()) {
+        
+        if (req.params.userId == req.user.id) {
+            
+
+            User.deleteOne({_id: req.user.id}, function (err) {
+                if (!err) {
+
+                    MyRoom.deleteOne({userid: req.user.id}, function (err) {
+                        if (!err) {
+            
+                            Peserta.deleteMany({userid: req.user.id}, function (err) {
+                                if (!err) {
+                    
+                                    console.log("Deleted");
+                                    res.redirect("/");
+            
+                                } else {
+                                    res.send(err);
+                                    res.render("error1");
+                                }
+                            });    
+            
+            
+                        } else {
+                            res.send(err);
+                            res.render("error1");
+                        }
+                    });
+    
+    
+                } else {
+                    res.send(err);
+                    res.render("error1");
+                }
+            });
+
+        }
+
+
+    } else {
+        res.redirect("/masuk");
+    }
 });
 
 app.get("/akun", function (req,res) {  
@@ -3126,6 +3260,14 @@ app.get("/tutorial", function (req, res) {
 
 app.get("/tutorial/export", function (req, res) {  
     res.render("tutorial-export");
+});
+
+app.get("/daftar1", function (req,res) {  
+    res.render("daftar1");
+});
+
+app.get("/masuk1", function (req,res) {  
+    res.render("masuk1");
 });
 
 app.get("*", function (req, res) {  

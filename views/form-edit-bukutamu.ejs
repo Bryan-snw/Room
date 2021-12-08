@@ -18,19 +18,18 @@
                 
                 </div>
                 
-                    <div class="center">
-                      <h2>Form</h2>
-                      <hr>
-
-                        <% ListForm.forEach(function(list) {  %>
-                          <div class="mb-3">
-                            <label for="exampleFormControlInput1" class="form-label"><%= list %> </label>
-                            <input type="text" class="form-control" id="exampleFormControlInput1" disabled="disabled" placeholder="">
-                        </div>
-                        <% }); %> 
-
-                    </div>  
+                <div class="center">
+                  <h2>Form</h2>
+                  <hr>
+                    <% ListForm.forEach(function(list) {  %>
+                      <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><%= list %> </label>
+                        <input type="text" class="form-control" id="exampleFormControlInput1" disabled="disabled" placeholder="">
+                    </div>
+                    <% }); %> 
+                </div>  
             </div>
+            
                 <div class="center" style="text-align: center;">
                     <button class="btn mk-btn-submit" name="btnKirim" id="btnKirim" >Buat</button>
                 </div>
@@ -38,8 +37,8 @@
 
                 <p class="small-text">Atau</p>
 
-                <div class="card-body">
-                  <button class="btn btn-submit" type="button" data-toggle="modal" data-target="#tambahForm" >Tekan Untuk Tambah</button>
+                <div class="center">
+                  <button class="btn btn-submit" type="button" data-toggle="modal" data-target="#tambahForm" >Tekan Untuk Tambah Form</button>
                 </div>
 
                 <!-- Modal -->

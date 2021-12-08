@@ -24,7 +24,9 @@
 
         <div class="center data-card">
             <h4>Tanggal: <%= rooms[0].room.tanggal %> </h4>
+            <h4>Tanggal: <%= rooms[0].room.deskripsi %> </h4>
             <h4><%= rooms[0].room.lokasi %>, <%= rooms[0].room.kota %></h4>
+            <h4>Waktu: <%= rooms[0].room.waktuMulai %> - <%= rooms[0].room.waktuSelesai %></h4>
             <h4><%= rooms[0].pesertaid.length %>  Tiket Terjual</h4>
             <h4><%= rooms[0].ticket.kuotaTicket - rooms[0].pesertaid.length %> Tiket Tersisa</h4>
             <h4> <%= rooms[0].ticket.kuotaTicket %> Kuota Tiket </h4>
